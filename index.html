@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>HS Golbal Learning Studio — Contact</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <h1 id="siteTitle">HS Golbal Learning Studio</h1>
+      <div class="contact">Call/WhatsApp: <strong id="contactNumber">+923086036049</strong></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <h2>Request a Service</h2>
+      <p class="lead">Select service, add details and submit. We'll contact you soon.</p>
+
+      <form id="hsForm">
+        <label>Name *</label>
+        <input name="name" type="text" placeholder="Full name" required>
+
+        <label>Email *</label>
+        <input name="email" type="email" placeholder="you@example.com" required>
+
+        <label>Contact *</label>
+        <input name="contact" type="text" placeholder="+92..." required>
+
+        <label>Service *</label>
+        <select name="service" required>
+          <option value="">-- Choose service --</option>
+          <option value="Web Development">Web Development</option>
+          <option value="Graphic Design">Graphic Design</option>
+          <option value="Study Visa">Study Visa</option>
+          <option value="Work Visa">Work Visa</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <label>Message</label>
+        <textarea name="message" rows="4" placeholder="Short description (optional)"></textarea>
+
+        <div class="actions">
+          <button type="submit">Submit</button>
+          <span id="status" class="small"></span>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="wrap small">© <span id="siteYear"></span> HS Golbal Learning Studio</footer>
+
+  <script src="script.js"></script>
+  <script>
+    // inject site title & contact from .env via server (we used in admin); for simple UI set here from .env fallback
+    document.getElementById('siteTitle').textContent = 'HS Golbal Learning Studio';
+    document.getElementById('contactNumber').textContent = '+923086036049';
+    document.getElementById('siteYear').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
