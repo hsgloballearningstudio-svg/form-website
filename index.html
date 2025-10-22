@@ -1,71 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>HS Global Learning Studio – Online Store & Services</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HS Global Learning Studio | Services & Admin</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="wrap">
-      <h1>HS Global Learning Studio</h1>
-      <nav>
-        <button onclick="showSection('home')">Home</button>
-        <button onclick="showSection('adminLogin')">Admin</button>
-      </nav>
-    </div>
+  <header class="topbar">
+    <h1>HS Global Learning Studio</h1>
+    <nav>
+      <button onclick="showPage('home')">Home</button>
+      <button onclick="showPage('adminLogin')">Admin</button>
+    </nav>
   </header>
 
-  <main class="wrap">
-    <!-- 🏠 Home -->
-    <section id="home" class="page">
+  <main>
+    <!-- HOME PAGE -->
+    <section id="home" class="page active">
       <h2>Request a Service</h2>
-      <form id="hsForm">
+      <p>Select your service and we’ll get back to you soon.</p>
+
+      <form id="serviceForm">
         <label>Name *</label>
-        <input name="name" type="text" required>
+        <input name="name" required>
+
         <label>Email *</label>
         <input name="email" type="email" required>
+
         <label>Contact *</label>
-        <input name="contact" type="text" required>
+        <input name="contact" required>
+
         <label>Service *</label>
         <select name="service" required>
-          <option value="">-- Choose --</option>
-          <option value="Web Development">Web Development</option>
-          <option value="Graphic Design">Graphic Design</option>
-          <option value="Video Editing">Video Editing</option>
-          <option value="Online Shopping">Online Shopping</option>
+          <option value="">-- Choose service --</option>
+          <option>Web Development</option>
+          <option>Graphic Design</option>
+          <option>Video Editing</option>
+          <option>Online Shopping</option>
         </select>
-        <textarea name="message" placeholder="Details (optional)"></textarea>
-        <button type="submit">Submit</button>
+
+        <label>Message</label>
+        <textarea name="message" placeholder="Write details..."></textarea>
+
+        <button type="submit">Submit Request</button>
       </form>
       <div id="status"></div>
-      <hr>
-      <h3>Products</h3>
+
+      <h3 class="subhead">Available Products</h3>
       <div id="productList" class="products"></div>
     </section>
 
-    <!-- 🔐 Admin Login -->
-    <section id="adminLogin" class="page hidden">
-      <h2>Admin Login</h2>
-      <input id="adminUser" placeholder="Username">
-      <input id="adminPass" type="password" placeholder="Password">
-      <button onclick="adminLogin()">Login</button>
-      <div id="loginMsg"></div>
+    <!-- ADMIN LOGIN -->
+    <section id="adminLogin" class="page">
+      <div class="card login-card">
+        <h2>Admin Login</h2>
+        <input id="adminUser" placeholder="Username">
+        <input id="adminPass" type="password" placeholder="Password">
+        <button onclick="loginAdmin()">Login</button>
+        <div id="loginMsg"></div>
+      </div>
     </section>
 
-    <!-- ⚙️ Admin Dashboard -->
-    <section id="adminPanel" class="page hidden">
-      <h2>Admin Dashboard</h2>
-      <button onclick="logout()">Logout</button>
-      <h3>Add Product</h3>
-      <input id="pName" placeholder="Product Name">
-      <input id="pPrice" placeholder="Price">
-      <input id="pImage" type="file" accept="image/*">
-      <textarea id="pDesc" placeholder="Description"></textarea>
-      <button onclick="addProduct()">Add Product</button>
-      <h3>All Orders</h3>
-      <ul id="ordersList"></ul>
+    <!-- ADMIN DASHBOARD -->
+    <section id="adminPanel" class="page">
+      <div class="card">
+        <h2>Admin Dashboard</h2>
+        <button class="logout" onclick="logout()">Logout</button>
+
+        <h3>Add New Product</h3>
+        <input id="pName" placeholder="Product Name">
+        <input id="pPrice" placeholder="Price">
+        <textarea id="pDesc" placeholder="Description"></textarea>
+        <input id="pImage" type="file" accept="image/*">
+        <button onclick="addProduct()">Add Product</button>
+
+        <h3>Customer Requests</h3>
+        <ul id="orderList"></ul>
+      </div>
     </section>
   </main>
 
