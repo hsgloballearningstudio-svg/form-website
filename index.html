@@ -1,92 +1,546 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>HS Global Learning Studio</title>
-  <style>
-    body{font-family:Arial, sans-serif;background:#f4f7fb;margin:0;padding:0;color:#111;}
-    header{background:#fff;padding:12px 0;border-bottom:1px solid #e6eef9;text-align:center;}
-    main{max-width:900px;margin:30px auto;padding:0 16px;}
-    h1{margin:0;font-size:22px;}
-    .card{background:#fff;border-radius:10px;padding:20px;margin-top:18px;box-shadow:0 6px 20px rgba(9,30,66,0.06);}
-    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #e8eef6;font-size:14px;}
-    button{background:#0066cc;color:#fff;padding:10px 14px;border:0;border-radius:8px;cursor:pointer;font-weight:700;}
-    button:hover{opacity:.9;}
-    .actions{margin-top:10px;}
-    footer{text-align:center;color:#777;margin:30px 0;}
-    .admin-login{position:fixed;bottom:10px;right:10px;background:#222;color:#fff;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;}
-    #adminPanel{display:none;}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HS Online Store — HS Global Learning Studio</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--accent:#0066cc;--muted:#6b7280}
+*{box-sizing:border-box}
+body{font-family:Segoe UI,Roboto,Arial;background:var(--bg);margin:0;color:#111}
+.wrap{max-width:1100px;margin:14px auto;padding:0 16px}
+header{background:#fff;padding:12px 0;border-bottom:1px solid #e6eef9}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{margin:0;font-size:20px}
+.contact{font-size:14px;color:var(--muted)}
+.btn{background:var(--accent);color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+.btn.alt{background:#666}
+.card{background:var(--card);border-radius:10px;padding:18px;margin-top:18px;box-shadow:0 6px 20px rgba(9,30,66,0.06)}
+label{display:block;margin-top:10px;font-weight:600}
+input,select,textarea,button{font-family:inherit}
+input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #e8eef6;font-size:14px}
+textarea{min-height:90px;resize:vertical}
+.actions{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.small{font-size:13px;color:var(--muted)}
+.hidden{display:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:12px}
+.product{background:#fff;padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(9,30,66,0.06);display:flex;flex-direction:column;gap:8px}
+.product img{width:100%;height:160px;object-fit:cover;border-radius:8px}
+.price-badge{position:absolute;background:#fff;padding:6px 8px;border-radius:8px;font-weight:700;right:12px;top:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.card-relative{position:relative}
+.table{width:100%;border-collapse:collapse;margin-top:8px}
+.table th,.table td{border:1px solid #e6eef9;padding:8px;text-align:left}
+.table th{background:#f9fafc}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+@media(max-width:700px){.header-inner{flex-direction:column;align-items:flex-start}.grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}}
+/* modal */
+.modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:999}
+.modal{background:#fff;padding:16px;border-radius:10px;max-width:520px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,0.25)}
+.close-x{background:#eee;border:0;padding:6px 8px;border-radius:6px;cursor:pointer}
+.badge{display:inline-block;padding:6px 8px;border-radius:6px;background:#f1f5f9;color:#111}
+.filter-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
+</style>
 </head>
 <body>
-  <header>
-    <h1>HS Global Learning Studio</h1>
-  </header>
+<header>
+  <div class="wrap header-inner">
+    <div>
+      <h1>HS Online Store</h1>
+      <div class="small contact">HS Global Learning Studio • WhatsApp: <strong>+923086036049</strong></div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="showSection('shop')">Shop</button>
+      <button class="btn" onclick="showSection('form')">Request Service</button>
+      <button id="adminBtnTop" class="btn" onclick="showSection('adminLogin')">Admin Login</button>
+    </div>
+  </div>
+</header>
 
-  <main>
-    <section class="card" id="formSection">
-      <h2>Request a Service</h2>
-      <form id="hsForm">
-        <label>Name *</label>
-        <input name="name" type="text" required>
-        <label>Email *</label>
-        <input name="email" type="email" required>
-        <label>Contact *</label>
-        <input name="contact" type="text" required>
-        <label>Service *</label>
-        <select name="service" required>
-          <option value="">-- Choose service --</option>
-          <option>Web Development</option>
-          <option>Graphic Design</option>
-          <option>Study Visa</option>
-          <option>Work Visa</option>
+<main class="wrap">
+
+  <!-- SHOP / PUBLIC VIEW -->
+  <section id="shop" class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+      <div>
+        <h2 style="margin:0">Online Shopping</h2>
+        <div class="small">Browse products — contact seller or place an order.</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="searchInput" placeholder="Search products..." style="padding:10px;border-radius:8px;border:1px solid #e8eef6">
+        <select id="categoryFilter" style="padding:10px;border-radius:8px;border:1px solid #e8eef6">
+          <option value="">All categories</option>
+          <option>Smartwatch</option><option>Bluetooth Speaker</option><option>AirPods</option>
+          <option>Earbuds</option><option>Gaming Headset</option><option>Ring Light</option>
+          <option>Power Bank</option><option>Others</option>
         </select>
-        <label>Message</label>
-        <textarea name="message"></textarea>
-        <div class="actions">
-          <button type="submit">Submit</button>
-          <span id="status"></span>
+      </div>
+    </div>
+
+    <div id="productsGrid" class="grid" style="margin-top:12px"></div>
+    <p id="noProducts" class="small hidden">No products yet.</p>
+  </section>
+
+  <!-- SERVICE REQUEST FORM -->
+  <section id="form" class="card hidden">
+    <h2>Request a Service</h2>
+    <p class="small">Select service, add details and submit. Admin will contact you.</p>
+    <form id="serviceForm">
+      <label>Name *</label>
+      <input name="name" required>
+      <label>Email *</label>
+      <input name="email" type="email" required>
+      <label>Contact *</label>
+      <input name="contact" required>
+      <label>Service *</label>
+      <select name="service" id="serviceSelect" required>
+        <option value="">-- Choose service --</option>
+        <option>Web Development</option>
+        <option>Graphic Design</option>
+        <option>Video Editing</option>
+        <option>Online Shopping</option>
+        <option>Study Visa</option>
+        <option>Work Visa</option>
+        <option>Other</option>
+      </select>
+      <label>Message</label>
+      <textarea name="message"></textarea>
+      <div class="actions">
+        <button type="submit" class="btn">Submit</button>
+        <button type="button" class="btn alt" onclick="showSection('shop')">Cancel</button>
+        <span id="formStatus" class="small"></span>
+      </div>
+    </form>
+  </section>
+
+  <!-- ADMIN LOGIN -->
+  <section id="adminLogin" class="card hidden">
+    <h2>Admin Login</h2>
+    <div style="max-width:420px">
+      <label>Username</label>
+      <input id="adminUser" placeholder="admin">
+      <label>Password</label>
+      <input id="adminPass" type="password" placeholder="1234">
+      <div class="actions">
+        <button id="doLogin" class="btn">Login</button>
+        <button class="btn alt" onclick="showSection('shop')">Back</button>
+        <span id="loginMsg" class="small"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN DASHBOARD -->
+  <section id="admin" class="card hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+      <h2 style="margin:0">Admin Dashboard</h2>
+      <div class="controls">
+        <span class="small badge">Logged in as <strong>admin</strong></span>
+        <button class="btn" onclick="showSection('manageProducts')">Manage Products</button>
+        <button class="btn" onclick="showSection('manageSubmissions')">Service Requests</button>
+        <button class="btn" onclick="showSection('manageOrders')">Orders</button>
+        <button class="btn alt" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <div id="adminMainArea" style="margin-top:12px">
+      <p class="small muted">Use the buttons above to manage products, view service requests and orders.</p>
+    </div>
+  </section>
+
+  <!-- MANAGE PRODUCTS -->
+  <section id="manageProducts" class="card hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+      <h2 style="margin:0">Products — Manage</h2>
+      <div class="controls">
+        <button class="btn" onclick="openAddProduct()">Add Product</button>
+        <button class="btn alt" onclick="showSection('admin')">Back</button>
+      </div>
+    </div>
+
+    <div id="productListAdmin" style="margin-top:12px"></div>
+  </section>
+
+  <!-- MANAGE SUBMISSIONS -->
+  <section id="manageSubmissions" class="card hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2 style="margin:0">Service Requests</h2>
+      <div class="controls">
+        <button class="btn alt" onclick="clearSubmissions()">Clear All</button>
+        <button class="btn" onclick="showSection('admin')">Back</button>
+      </div>
+    </div>
+    <table class="table" style="margin-top:12px">
+      <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Contact</th><th>Service</th><th>Message</th><th>Time</th><th>Action</th></tr></thead>
+      <tbody id="submissionsTbody"></tbody>
+    </table>
+  </section>
+
+  <!-- MANAGE ORDERS -->
+  <section id="manageOrders" class="card hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2 style="margin:0">Orders</h2>
+      <div class="controls">
+        <button class="btn alt" onclick="clearOrders()">Clear All</button>
+        <button class="btn" onclick="showSection('admin')">Back</button>
+      </div>
+    </div>
+    <table class="table" style="margin-top:12px">
+      <thead><tr><th>#</th><th>Product</th><th>Name</th><th>Phone</th><th>Qty</th><th>Address</th><th>Notes</th><th>Time</th><th>Action</th></tr></thead>
+      <tbody id="ordersTbody"></tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer style="text-align:center;padding:20px;color:var(--muted)">© <span id="year"></span> HS Global Learning Studio</footer>
+
+<!-- Modal placeholders -->
+<div id="modalRoot" class="hidden"></div>
+
+<script>
+/* ===================== Data keys ===================== */
+const KEY_SUB = 'hsFormSubmissions';
+const KEY_PRODUCTS = 'hsProducts';
+const KEY_ORDERS = 'hsOrders';
+const KEY_ADMIN = 'hsAdminLogged'; // 'true' when logged
+
+/* ===================== Util ===================== */
+function nowISO(){ return new Date().toISOString(); }
+function uid(){ return Date.now() + Math.floor(Math.random()*999); }
+function q(id){ return document.getElementById(id); }
+function save(key, obj){ localStorage.setItem(key, JSON.stringify(obj)); }
+function load(key){ try{ return JSON.parse(localStorage.getItem(key) || '[]'); }catch(e){ return []; } }
+function showSection(name){
+  document.querySelectorAll('main > section').forEach(s=>s.classList.add('hidden'));
+  const el = document.querySelector('#' + name);
+  if(el) el.classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+  q('loginMsg') && (q('loginMsg').textContent = '');
+  refreshUI();
+}
+
+/* ===================== Initial UI ===================== */
+q('year').textContent = new Date().getFullYear();
+showSection('shop');
+refreshUI();
+
+/* ===================== SERVICE FORM (public) ===================== */
+q('serviceForm').addEventListener('submit', function(ev){
+  ev.preventDefault();
+  const form = ev.target;
+  const data = {
+    id: uid(),
+    name: form.name.value.trim(),
+    email: form.email.value.trim(),
+    contact: form.contact.value.trim(),
+    service: form.service.value,
+    message: form.message.value.trim(),
+    time: nowISO()
+  };
+  const arr = load(KEY_SUB);
+  arr.unshift(data);
+  save(KEY_SUB, arr);
+  q('formStatus').textContent = 'Submitted — thank you!';
+  q('formStatus').style.color = 'green';
+  form.reset();
+  if(data.service === 'Online Shopping') {
+    showSection('shop');
+    setTimeout(()=> q('searchInput').focus(),300);
+  }
+});
+
+/* ===================== SHOP (public) ===================== */
+q('searchInput').addEventListener('input', renderProducts);
+q('categoryFilter').addEventListener('change', renderProducts);
+
+function renderProducts(){
+  const all = load(KEY_PRODUCTS).filter(p=>p.status === 'approved');
+  const qstr = q('searchInput').value.trim().toLowerCase();
+  const cat = q('categoryFilter').value;
+  let filtered = all;
+  if(cat) filtered = filtered.filter(p=>p.category === cat);
+  if(qstr) filtered = filtered.filter(p=> (p.title + ' ' + p.desc + ' ' + p.category).toLowerCase().includes(qstr));
+  const container = q('productsGrid');
+  if(filtered.length === 0){ container.innerHTML=''; q('noProducts').classList.remove('hidden'); return; }
+  q('noProducts').classList.add('hidden');
+  container.innerHTML = filtered.map((p, idx)=>`
+    <div class="product card-relative product">
+      <div style="position:relative">
+        <img src="${p.img||'https://via.placeholder.com/600x400?text=No+Image'}" alt="${escape(p.title)}">
+        <div class="price-badge">Rs ${escape(p.price)}</div>
+      </div>
+      <div>
+        <strong>${escape(p.title)}</strong>
+        <div class="small">${escape(p.category)} • ${escape(p.location||'')}</div>
+        <div style="margin-top:8px">${escape(p.desc||'')}</div>
+        <div class="actions" style="margin-top:10px">
+          <a class="btn" href="tel:${p.contact?escapeTel(p.contact):''}">Call / WhatsApp</a>
+          <button class="btn alt" onclick="openOrderModal('${p.id}')">Order Now</button>
         </div>
-      </form>
-    </section>
+      </div>
+    </div>
+  `).join('');
+}
 
-    <section class="card" id="adminPanel">
-      <h2>Admin Panel</h2>
-      <p>Welcome, Admin! (this section will later show submissions & products)</p>
-      <button onclick="logout()">Logout</button>
-    </section>
-  </main>
+/* ===================== ORDERS (public) ===================== */
+function openOrderModal(productId){
+  const p = load(KEY_PRODUCTS).find(x=>x.id===productId);
+  if(!p) return alert('Product not found');
+  const html = `
+    <div class="modal-back" id="modal">
+      <div class="modal">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3>Order: ${escape(p.title)}</h3>
+          <button class="close-x" onclick="closeModal()">X</button>
+        </div>
+        <label>Your Name</label><input id="oName">
+        <label>Phone</label><input id="oPhone">
+        <label>Address</label><input id="oAddress">
+        <label>Quantity</label><input id="oQty" type="number" min="1" value="1">
+        <label>Notes (optional)</label><textarea id="oNotes" rows="2"></textarea>
+        <div class="actions" style="margin-top:12px">
+          <button class="btn" onclick="submitOrder('${productId}')">Place Order</button>
+          <button class="btn alt" onclick="closeModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  `;
+  q('modalRoot').innerHTML = html; q('modalRoot').classList.remove('hidden');
+}
+function closeModal(){ q('modalRoot').innerHTML=''; q('modalRoot').classList.add('hidden'); }
 
-  <div class="admin-login" onclick="openLogin()">Admin Login</div>
+function submitOrder(productId){
+  const name = q('oName').value.trim(); const phone = q('oPhone').value.trim();
+  const addr = q('oAddress').value.trim(); const qty = parseInt(q('oQty').value) || 1; const notes = q('oNotes').value.trim();
+  if(!name || !phone || !addr) return alert('Please fill name, phone and address');
+  const p = load(KEY_PRODUCTS).find(x=>x.id===productId);
+  const orders = load(KEY_ORDERS);
+  orders.unshift({ id: uid(), productId, productTitle: p.title, name, phone, address: addr, qty, notes, time: nowISO() });
+  save(KEY_ORDERS, orders);
+  closeModal();
+  alert('Order placed — admin will contact you.');
+}
 
-  <footer>© <span id="year"></span> HS Global Learning Studio</footer>
+/* ===================== ADMIN AUTH ===================== */
+q('doLogin').addEventListener('click', function(){
+  const u = q('adminUser').value.trim(); const p = q('adminPass').value.trim();
+  if(u === 'admin' && p === '1234'){ localStorage.setItem(KEY_ADMIN,'true'); showSection('admin'); } 
+  else { q('loginMsg').textContent='Invalid credentials'; q('loginMsg').style.color='red'; }
+});
+q('logoutBtn') && q('logoutBtn').addEventListener('click', function(){ localStorage.removeItem(KEY_ADMIN); showSection('shop'); });
 
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+/* ===================== ADMIN AREAS ===================== */
+function refreshUI(){
+  const logged = localStorage.getItem(KEY_ADMIN);
+  if(logged){ q('adminBtnTop').classList.add('hidden'); } else { q('adminBtnTop').classList.remove('hidden'); }
+  if(!document.querySelector('#shop').classList.contains('hidden')) renderProducts();
+}
 
-    const adminBtn = document.querySelector(".admin-login");
-    const adminPanel = document.getElementById("adminPanel");
-    const formSection = document.getElementById("formSection");
+/* Manage submissions */
+function loadSubmissions(){
+  const arr = load(KEY_SUB);
+  const tbody = q('submissionsTbody');
+  tbody.innerHTML = arr.map((s,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td>${escape(s.name)}</td>
+      <td>${escape(s.email)}</td>
+      <td>${escape(s.contact)}</td>
+      <td>${escape(s.service)}</td>
+      <td>${escape(s.message)}</td>
+      <td>${new Date(s.time).toLocaleString()}</td>
+      <td><button class="btn alt" onclick="deleteSubmission(${i})">Del</button></td>
+    </tr>
+  `).join('');
+}
+function deleteSubmission(i){ const a = load(KEY_SUB); a.splice(i,1); save(KEY_SUB,a); loadSubmissions(); }
+function clearSubmissions(){ if(!confirm('Clear all submissions?')) return; save(KEY_SUB,[]); loadSubmissions(); alert('Cleared'); }
 
-    function openLogin(){
-      const user = prompt("Enter admin username:");
-      const pass = prompt("Enter admin password:");
-      if(user === "admin" && pass === "1234"){
-        alert("Login successful!");
-        adminPanel.style.display = "block";
-        formSection.style.display = "none";
-        adminBtn.style.display = "none";
-      } else {
-        alert("Invalid username or password!");
-      }
-    }
+/* Manage orders */
+function loadOrders(){
+  const a = load(KEY_ORDERS);
+  q('ordersTbody').innerHTML = a.map((o,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td>${escape(o.productTitle)}</td>
+      <td>${escape(o.name)}</td>
+      <td>${escape(o.phone)}</td>
+      <td>${o.qty}</td>
+      <td>${escape(o.address)}</td>
+      <td>${escape(o.notes)}</td>
+      <td>${new Date(o.time).toLocaleString()}</td>
+      <td><button class="btn alt" onclick="deleteOrder(${i})">Del</button></td>
+    </tr>
+  `).join('');
+}
+function deleteOrder(i){ const a=load(KEY_ORDERS); a.splice(i,1); save(KEY_ORDERS,a); loadOrders(); }
+function clearOrders(){ if(!confirm('Clear all orders?')) return; save(KEY_ORDERS,[]); loadOrders(); alert('Cleared'); }
 
-    function logout(){
-      adminPanel.style.display = "none";
-      formSection.style.display = "block";
-      adminBtn.style.display = "block";
-    }
-  </script>
+/* Manage products (admin) */
+function openAddProduct(){
+  const html = `
+  <div class="modal-back" id="modal">
+    <div class="modal">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3>Add Product</h3>
+        <button class="close-x" onclick="closeModal()">X</button>
+      </div>
+      <label>Image (choose file)</label>
+      <input id="fileInput" type="file" accept="image/*">
+      <label>Title</label><input id="prodTitle">
+      <label>Description</label><textarea id="prodDesc" rows="2"></textarea>
+      <label>Price (PKR)</label><input id="prodPrice">
+      <label>Category</label>
+      <select id="prodCategory">
+        <option>Smartwatch</option><option>Bluetooth Speaker</option><option>AirPods</option>
+        <option>Earbuds</option><option>Gaming Headset</option><option>Ring Light</option>
+        <option>Power Bank</option><option>Others</option>
+      </select>
+      <label>Location</label><input id="prodLocation" placeholder="City / Area">
+      <label>Contact (WhatsApp/Phone)</label><input id="prodContact" placeholder="+92...">
+      <div class="actions" style="margin-top:12px">
+        <button class="btn" onclick="handleAddProduct()">Save</button>
+        <button class="btn alt" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>`;
+  q('modalRoot').innerHTML = html; q('modalRoot').classList.remove('hidden');
+}
+function handleAddProduct(){
+  const fileEl = q('fileInput');
+  const title = q('prodTitle').value.trim();
+  const desc = q('prodDesc').value.trim();
+  const price = q('prodPrice').value.trim();
+  const category = q('prodCategory').value;
+  const location = q('prodLocation').value.trim();
+  const contact = q('prodContact').value.trim();
+  if(!title || !price){ return alert('Title and price required'); }
+  if(fileEl.files && fileEl.files[0]){
+    const f = fileEl.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const base = e.target.result;
+      pushProduct({img:base,title,desc,price,category,location,contact,status:'approved',id:uid(),time:nowISO()});
+      closeModal();
+      showSection('manageProducts');
+    };
+    reader.readAsDataURL(f);
+  } else {
+    pushProduct({img:'https://via.placeholder.com/600x400?text=No+Image',title,desc,price,category,location,contact,status:'approved',id:uid(),time:nowISO()});
+    closeModal();
+    showSection('manageProducts');
+  }
+}
+function pushProduct(p){
+  const arr = load(KEY_PRODUCTS);
+  arr.unshift(p);
+  save(KEY_PRODUCTS, arr);
+  renderAdminProducts();
+  renderProducts();
+}
+function renderAdminProducts(){
+  const arr = load(KEY_PRODUCTS);
+  if(arr.length === 0){ q('productListAdmin').innerHTML = '<p class="small">No products yet.</p>'; return; }
+  q('productListAdmin').innerHTML = arr.map((p, i)=>`
+    <div class="product-card" style="display:flex;gap:12px;align-items:flex-start">
+      <img src="${p.img}" style="max-width:150px;height:100px;object-fit:cover;border-radius:8px">
+      <div style="flex:1">
+        <strong>${escape(p.title)}</strong> <div class="small">${escape(p.category)} • ${escape(p.location||'')}</div>
+        <div style="margin-top:6px">${escape(p.desc)}</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <div class="badge">Rs ${escape(p.price)}</div>
+          <button class="btn" onclick="approveProduct(${i})">${p.status==='approved'?'Approved':'Approve'}</button>
+          <button class="btn alt" onclick="editProduct(${i})">Edit</button>
+          <button class="btn alt" onclick="deleteProduct(${i})">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+function approveProduct(i){
+  const a = load(KEY_PRODUCTS); a[i].status = 'approved'; save(KEY_PRODUCTS,a); renderAdminProducts(); renderProducts();
+}
+function deleteProduct(i){
+  if(!confirm('Delete product?')) return;
+  const a = load(KEY_PRODUCTS); a.splice(i,1); save(KEY_PRODUCTS,a); renderAdminProducts(); renderProducts();
+}
+function editProduct(i){
+  const a = load(KEY_PRODUCTS); const p = a[i];
+  const html = `
+  <div class="modal-back" id="modal">
+    <div class="modal">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3>Edit Product</h3><button class="close-x" onclick="closeModal()">X</button>
+      </div>
+      <label>Image (choose file to replace)</label><input id="fileEdit" type="file" accept="image/*">
+      <label>Title</label><input id="editTitle" value="${escape(p.title)}">
+      <label>Description</label><textarea id="editDesc" rows="2">${escape(p.desc)}</textarea>
+      <label>Price</label><input id="editPrice" value="${escape(p.price)}">
+      <label>Category</label>
+      <select id="editCategory">
+        <option${p.category==='Smartwatch'?' selected':''}>Smartwatch</option>
+        <option${p.category==='Bluetooth Speaker'?' selected':''}>Bluetooth Speaker</option>
+        <option${p.category==='AirPods'?' selected':''}>AirPods</option>
+        <option${p.category==='Earbuds'?' selected':''}>Earbuds</option>
+        <option${p.category==='Gaming Headset'?' selected':''}>Gaming Headset</option>
+        <option${p.category==='Ring Light'?' selected':''}>Ring Light</option>
+        <option${p.category==='Power Bank'?' selected':''}>Power Bank</option>
+        <option${p.category==='Others'?' selected':''}>Others</option>
+      </select>
+      <label>Location</label><input id="editLocation" value="${escape(p.location||'')}">
+      <label>Contact</label><input id="editContact" value="${escape(p.contact||'')}">
+      <div class="actions" style="margin-top:12px">
+        <button class="btn" onclick="saveEdit(${i})">Save</button>
+        <button class="btn alt" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>`;
+  q('modalRoot').innerHTML = html; q('modalRoot').classList.remove('hidden');
+}
+function saveEdit(i){
+  const a = load(KEY_PRODUCTS); const p = a[i];
+  const fileEl = q('fileEdit');
+  const title = q('editTitle').value.trim();
+  const desc = q('editDesc').value.trim();
+  const price = q('editPrice').value.trim();
+  const category = q('editCategory').value;
+  const location = q('editLocation').value.trim();
+  const contact = q('editContact').value.trim();
+  if(fileEl.files && fileEl.files[0]){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      p.img = e.target.result; p.title = title; p.desc = desc; p.price = price; p.category = category; p.location = location; p.contact = contact;
+      save(KEY_PRODUCTS,a); closeModal(); renderAdminProducts(); renderProducts();
+    };
+    reader.readAsDataURL(fileEl.files[0]);
+  } else {
+    p.title = title; p.desc = desc; p.price = price; p.category = category; p.location = location; p.contact = contact;
+    save(KEY_PRODUCTS,a); closeModal(); renderAdminProducts(); renderProducts();
+  }
+}
+
+/* Load submissions and orders functions */
+function loadSubmissionsOnShow(){ loadSubmissions(); }
+function loadOrdersOnShow(){ loadOrders(); }
+
+/* manage buttons mapping */
+document.addEventListener('click', function(e){
+  if(e.target && e.target.matches('button[onclick="showSection(\\'manageProducts\\')"]')){ renderAdminProducts(); showSection('manageProducts'); }
+});
+document.addEventListener('click', function(e){
+  if(e.target && e.target.matches('button[onclick="showSection(\\'manageSubmissions\\')"]')){ loadSubmissions(); showSection('manageSubmissions'); }
+});
+document.addEventListener('click', function(e){
+  if(e.target && e.target.matches('button[onclick="showSection(\\'manageOrders\\')"]')){ loadOrders(); showSection('manageOrders'); }
+});
+
+/* ===================== Helper escape functions ===================== */
+function escape(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escapeTel(s){ if(!s) return ''; return String(s).replace(/\s+/g,'').replace(/[^\d\+]/g,''); }
+
+/* initial render */
+renderProducts();
+refreshUI();
+
+</script>
 </body>
 </html>
