@@ -38,6 +38,13 @@ main {
   margin: 20px auto;
   padding: 0 16px;
 }
+.page { display: none; }
+.page.active { display: block; animation: fade .4s ease; }
+
+@keyframes fade {
+  from {opacity: 0; transform: translateY(10px);}
+  to {opacity: 1; transform: translateY(0);}
+}
 
 form {
   background: var(--card);
@@ -103,3 +110,25 @@ footer {
   padding: 20px;
   color: var(--muted);
 }
+.footer-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  background: var(--card);
+  padding: 30px 20px;
+  border-top: 2px solid var(--accent);
+  margin-top: 40px;
+}
+.footer-section h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: var(--accent);
+}
+.footer-section p, .footer-section li {
+  font-size: 14px;
+  margin: 4px 0;
+  list-style: none;
+}
+.footer-section ul { padding: 0; }
+.footer-section a { color: var(--text); text-decoration: none; }
+.footer-section a:hover { text-decoration: underline; }
