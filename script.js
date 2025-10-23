@@ -84,11 +84,14 @@ function addProduct() {
 function renderOrders() {
   const list = document.getElementById("orderList");
   const orders = JSON.parse(localStorage.getItem("orders") || "[]");
-
   if (!orders.length) {
     list.innerHTML = "<li>No customer requests yet.</li>";
     return;
   }
+  list.innerHTML = orders.map(o => `
+    <li><strong>${o.name}</strong> (${o.email}) — ${o.service}</li>
+  `).join("");
+}
 
   list.innerHTML = orders.map(o => `
     <li style="margin-bottom:10px;">
@@ -100,3 +103,4 @@ function renderOrders() {
     </li>
   `).join("");
 }
+
