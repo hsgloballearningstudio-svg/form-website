@@ -1,169 +1,139 @@
-// server.js — Final ready backend
-require('dotenv').config(); // npm package 'dotenv' required
-const express = require('express');
-const nodemailer = require('nodemailer');
-const bodyParser = require('body-parser');
-const fs = require('fs');
-const path = require('path');
-const basicAuth = require('basic-auth');
+document.getElementById("year").textContent = new Date().getFullYear();
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Middlewares
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(__dirname)); // serve index.html, style.css, script.js
-
-// Serve index on root
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Data file
-const DATA_FILE = path.join(__dirname, 'submissions.json');
-if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, '[]', 'utf8');
-
-// Admin credentials from .env
-const ADMIN_USER = process.env.ADMIN_USER || 'HSeeb';
-const ADMIN_PASS = process.env.ADMIN_PASS || 'H$eebalikhansania03166036089';
-
-// Create transporter using Gmail (app password)
-const EMAIL_USER = process.env.EMAIL_USER;
-const EMAIL_PASS = process.env.EMAIL_PASS;
-
-let transporter = null;
-if (EMAIL_USER && EMAIL_PASS) {
-  transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-  user: "hsadvertiserofficial@gmail.com",
-  pass: "your-app-password"
-   },
-  });
-} else {
-  console.warn('Email not configured — set EMAIL_USER and EMAIL_PASS in .env to enable email notifications.');
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  if(id==="home") renderProducts();
+  if(id==="adminPanel") { renderOrders(); renderAdminProducts(); }
 }
 
-// API to receive form
-app.post('/submit', async (req, res) => {
-  try {
-    const { name, email, contact, service, message } = req.body;
-
-    if (!name || !email || !contact || !service) {
-      return res.status(400).json({ ok: false, error: 'Missing required fields' });
-    }
-
-    const entry = {
-      id: Date.now(),
-      name,
-      email,
-      contact,
-      service,
-      message: message || '',
-      createdAt: new Date().toISOString()
-    };
-
-    // Read, prepend, save
-    const arr = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8') || '[]');
-    arr.unshift(entry);
-    fs.writeFileSync(DATA_FILE, JSON.stringify(arr, null, 2), 'utf8');
-
-    // Try send email if transporter available
-    if (transporter) {
-      const mailOptions = {
-        from: `"${process.env.SITE_TITLE || 'Website'}" <${EMAIL_USER}>`,
-        to: EMAIL_USER, // send to same account (you can change)
-        subject: `New Submission — ${entry.service}`,
-        text:
-`New submission received:
-Name: ${entry.name}
-Email: ${entry.email}
-Contact: ${entry.contact}
-Service: ${entry.service}
-Message: ${entry.message}
-Time: ${entry.createdAt}`
-      };
-
-      try {
-        await transporter.sendMail(mailOptions);
-        console.log('Email sent for submission id:', entry.id);
-      } catch (mailErr) {
-        console.warn('Email failed:', mailErr && mailErr.message ? mailErr.message : mailErr);
-      }
-    }
-
-    return res.json({ ok: true });
-  } catch (err) {
-    console.error('Submit error:', err);
-    return res.status(500).json({ ok: false, error: 'Server error' });
-  }
+// ===== SERVICE FORM =====
+const form = document.getElementById("serviceForm");
+form.addEventListener("submit", e=>{
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(form).entries());
+  const orders = JSON.parse(localStorage.getItem("orders")||"[]");
+  orders.push(data);
+  localStorage.setItem("orders", JSON.stringify(orders));
+  form.reset();
+  document.getElementById("status").textContent="Submitted! We’ll contact within 12 hrs.";
+  setTimeout(()=> document.getElementById("status").textContent="",3000);
 });
 
-// Admin page (basic-auth via browser prompt)
-function requireAdmin(req, res, next) {
-  const user = basicAuth(req);
-  if (!user || user.name !== ADMIN_USER || user.pass !== ADMIN_PASS) {
-    res.set('WWW-Authenticate', 'Basic realm="Admin Area"');
-    return res.status(401).send('Access denied');
-  }
-  return next();
-}
-
-app.get('/admin', requireAdmin, (req, res) => {
-  const arr = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8') || '[]');
-
-  // simple HTML table
-  let html = `
-    <html>
-      <head>
-        <meta charset="utf-8"/>
-        <title>Submissions — ${process.env.SITE_TITLE || 'Admin'}</title>
-        <style>
-          body{font-family:Segoe UI,Arial; padding:20px; background:#f4f6fb}
-          table{border-collapse:collapse;width:100%;background:#fff;border-radius:8px;overflow:hidden}
-          th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
-          th{background:#f1f5f9}
-          .meta{margin-bottom:10px;color:#444}
-          .small{font-size:13px;color:#666}
-        </style>
-      </head>
-      <body>
-        <h2>Submissions (${arr.length})</h2>
-        <div class="meta small">Site: ${process.env.SITE_TITLE || ''} • Contact: ${process.env.CONTACT_NUMBER || ''}</div>
-        <table>
-          <thead>
-            <tr><th>#</th><th>Name</th><th>Email</th><th>Contact</th><th>Service</th><th>Message</th><th>Time</th></tr>
-          </thead>
-          <tbody>
-  `;
-
-  for (let i = 0; i < arr.length; i++) {
-    const s = arr[i];
-    html += `<tr>
-      <td>${i+1}</td>
-      <td>${escapeHtml(s.name)}</td>
-      <td>${escapeHtml(s.email)}</td>
-      <td>${escapeHtml(s.contact)}</td>
-      <td>${escapeHtml(s.service)}</td>
-      <td>${escapeHtml(s.message || '')}</td>
-      <td>${escapeHtml(s.createdAt)}</td>
-    </tr>`;
-  }
-
-  html += `</tbody></table></body></html>`;
-  res.send(html);
+// ===== PRODUCT ORDER FORM =====
+const productOrderForm = document.getElementById("productOrderForm");
+productOrderForm.addEventListener("submit", e=>{
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(productOrderForm).entries());
+  const custOrders = JSON.parse(localStorage.getItem("custOrders")||"[]");
+  custOrders.push(data);
+  localStorage.setItem("custOrders", JSON.stringify(custOrders));
+  alert("Customer order submitted!");
+  productOrderForm.reset();
+  showPage("home");
 });
 
-// helper to avoid basic injection in admin display
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+// ===== ADMIN LOGIN =====
+const ADMIN = { user:"admin", pass:"1234" };
+function loginAdmin(){
+  const u=document.getElementById("adminUser").value;
+  const p=document.getElementById("adminPass").value;
+  if(u===ADMIN.user && p===ADMIN.pass){
+    showPage("adminPanel");
+    document.getElementById("loginMsg").textContent="";
+  } else {
+    document.getElementById("loginMsg").textContent="Invalid username or password!";
+  }
+}
+function logout(){ showPage("home"); }
+
+// ===== PRODUCTS =====
+function renderProducts(){
+  const list=document.getElementById("productList");
+  const products=JSON.parse(localStorage.getItem("products")||"[]");
+  if(!products.length){ list.innerHTML="<p>No products added yet.</p>"; return; }
+  list.innerHTML=products.map((p,i)=>`
+    <div class="product">
+      <img src="${p.img}" alt="${p.name}">
+      <h4>${p.name}</h4>
+      <p>${p.desc}</p>
+      <strong>${p.price}</strong>
+      <button class="buyBtn" onclick="openProductForm(${i})">Buy Now</button>
+    </div>
+  `).join("");
 }
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+function openProductForm(index){
+  const products = JSON.parse(localStorage.getItem("products")||"[]");
+  const prod = products[index];
+  document.getElementById("prodTitleHeading").textContent = prod.name;
+  document.getElementById("prodIdInput").value = index;
+  showPage("productOrder");
+}
+
+// ===== ADD PRODUCT WITH IMAGE UPLOAD =====
+function addProduct(){
+  const name = document.getElementById("pName").value;
+  const price = document.getElementById("pPrice").value;
+  const desc = document.getElementById("pDesc").value;
+  const file = document.getElementById("pImage").files[0];
+
+  if(!name || !price || !file) return alert("Fill all product fields!");
+  
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    const products = JSON.parse(localStorage.getItem("products")||"[]");
+    products.push({ name, price, desc, img: reader.result });
+    localStorage.setItem("products", JSON.stringify(products));
+    alert("Product added successfully!");
+    renderProducts();
+    renderAdminProducts();
+    document.getElementById("pName").value="";
+    document.getElementById("pPrice").value="";
+    document.getElementById("pDesc").value="";
+    document.getElementById("pImage").value="";
+  };
+  reader.readAsDataURL(file);
+}
+
+// ===== ADMIN PRODUCTS LIST WITH DELETE =====
+function renderAdminProducts(){
+  const list = document.getElementById("adminProductList");
+  const products = JSON.parse(localStorage.getItem("products")||"[]");
+  if(!products.length){ list.innerHTML="<li>No products yet.</li>"; return; }
+
+  list.innerHTML = products.map((p,i)=>`
+    <li>
+      ${p.name} - ${p.price} 
+      <button onclick="deleteProduct(${i})" style="margin-left:10px;">Delete</button>
+    </li>
+  `).join("");
+}
+
+function deleteProduct(index){
+  const products = JSON.parse(localStorage.getItem("products")||"[]");
+  products.splice(index,1);
+  localStorage.setItem("products", JSON.stringify(products));
+  renderProducts();
+  renderAdminProducts();
+}
+
+// ===== ADMIN ORDERS =====
+function renderOrders(){
+  const list = document.getElementById("orderList");
+  const orders = JSON.parse(localStorage.getItem("orders")||"[]");
+  const custOrders = JSON.parse(localStorage.getItem("custOrders")||"[]");
+  const allOrders = orders.concat(custOrders);
+
+  if(!allOrders.length){ list.innerHTML="<li>No requests yet.</li>"; return; }
+
+  list.innerHTML = allOrders.map(o=>`
+    <li style="margin-bottom:12px;border-bottom:1px solid #ddd;padding-bottom:8px;">
+      <strong>Name:</strong> ${o.name || o.custName}<br>
+      <strong>Email:</strong> ${o.email || o.custEmail}<br>
+      <strong>Contact:</strong> ${o.contact || o.custPhone}<br>
+      <strong>Service / Product:</strong> ${o.service || JSON.parse(localStorage.getItem("products"))[o.productId]?.name}<br>
+      <strong>Address / Message:</strong> ${o.message || o.custAddress || '—'}
+    </li>
+  `).join("");
+}
