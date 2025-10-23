@@ -1,107 +1,145 @@
-:root {
-  --accent: #007bff;
-  --bg: #f5f7fb;
-  --card: #fff;
-  --text: #222;
-  --muted: #666;
+document.getElementById("year").textContent = new Date().getFullYear();
+
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  if(id==="home") renderProducts();
+  if(id==="adminPanel") { renderOrders(); renderAdminProducts(); renderProductOrders(); }
 }
 
-body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
+// ===== SERVICE FORM =====
+const form = document.getElementById("serviceForm");
+form.addEventListener("submit", e=>{
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(form).entries());
+  const orders = JSON.parse(localStorage.getItem("orders")||"[]");
+  orders.push(data);
+  localStorage.setItem("orders", JSON.stringify(orders));
+  form.reset();
+  document.getElementById("status").textContent="Submitted! We’ll contact within 12 hrs.";
+  setTimeout(()=> document.getElementById("status").textContent="",4000);
+});
+
+// ===== ADMIN LOGIN =====
+const ADMIN = { user:"admin", pass:"1234" };
+function loginAdmin(){
+  const u=document.getElementById("adminUser").value;
+  const p=document.getElementById("adminPass").value;
+  if(u===ADMIN.user && p===ADMIN.pass){
+    showPage("adminPanel");
+    document.getElementById("loginMsg").textContent="";
+  } else {
+    document.getElementById("loginMsg").textContent="Invalid username or password!";
+  }
+}
+function logout(){ showPage("home"); }
+
+// ===== PRODUCTS =====
+function renderProducts(){
+  const list=document.getElementById("productList");
+  const products=JSON.parse(localStorage.getItem("products")||"[]");
+  if(!products.length){ list.innerHTML="<p>No products added yet.</p>"; return; }
+  list.innerHTML=products.map((p,i)=>`
+    <div class="product">
+      <img src="${p.img}" alt="${p.name}">
+      <h4>${p.name}</h4>
+      <p>${p.desc}</p>
+      <strong>${p.price}</strong>
+      <button onclick="buyNow(${i})">Buy Now</button>
+    </div>
+  `).join("");
 }
 
-.topbar {
-  background: var(--card);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  padding: 10px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+// ===== BUY NOW =====
+function buyNow(index){
+  const products=JSON.parse(localStorage.getItem("products")||"[]");
+  showPage("productFormPage");
+  document.querySelector('#productForm input[name="product"]').value = products[index].name;
 }
 
-nav button {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  margin-left: 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-}
-nav button:hover { opacity: .9; }
+// ===== PRODUCT ORDER FORM =====
+const productForm = document.getElementById("productForm");
+productForm.addEventListener("submit", e=>{
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(productForm).entries());
+  const orders = JSON.parse(localStorage.getItem("productOrders")||"[]");
+  orders.push(data);
+  localStorage.setItem("productOrders", JSON.stringify(orders));
+  productForm.reset();
+  document.getElementById("productStatus").textContent="Submitted! We’ll contact within 12 hrs.";
+  setTimeout(()=> document.getElementById("productStatus").textContent="",4000);
+  showPage("home");
+});
 
-main {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 0 16px;
-}
+// ===== ADD PRODUCT =====
+function addProduct(){
+  const name=document.getElementById("pName").value;
+  const price=document.getElementById("pPrice").value;
+  const desc=document.getElementById("pDesc").value;
+  const file=document.getElementById("pImage").files[0];
+  if(!name||!price||!file) return alert("Fill all product fields!");
 
-.page { display: none; }
-.page.active { display: block; animation: fade .4s ease; }
-
-@keyframes fade {
-  from {opacity: 0; transform: translateY(10px);}
-  to {opacity: 1; transform: translateY(0);}
-}
-
-form, .card {
-  background: var(--card);
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-}
-
-label { font-weight: 600; display: block; margin-top: 10px; }
-input, select, textarea, button {
-  width: 100%;
-  margin-top: 5px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 15px;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    const products = JSON.parse(localStorage.getItem("products")||"[]");
+    products.push({ name, price, desc, img: reader.result });
+    localStorage.setItem("products", JSON.stringify(products));
+    renderProducts();
+    renderAdminProducts();
+    alert("Product added successfully!");
+  };
+  reader.readAsDataURL(file);
 }
 
-button { background: var(--accent); border: none; color: white; margin-top: 14px; cursor: pointer; font-weight: 600; }
-button:hover { opacity: .9; }
-
-.logout { background: crimson; }
-
-.products {
-  display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(180px,1fr));
-  gap: 15px;
-  margin-top: 15px;
+// ===== ADMIN PRODUCTS =====
+function renderAdminProducts(){
+  const list=document.getElementById("adminProductList");
+  const products = JSON.parse(localStorage.getItem("products")||"[]");
+  if(!products.length){ list.innerHTML="<p>No products added.</p>"; return; }
+  list.innerHTML=products.map((p,i)=>`
+    <div style="border:1px solid #ddd;padding:8px;margin-bottom:6px;">
+      <strong>${p.name}</strong> — ${p.price}
+      <button style="float:right;background:red;" onclick="deleteProduct(${i})">Delete</button>
+    </div>
+  `).join("");
 }
 
-.product {
-  background: var(--card);
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-  text-align: center;
-  cursor: pointer;
-  position: relative;
+function deleteProduct(index){
+  const products = JSON.parse(localStorage.getItem("products")||"[]");
+  products.splice(index,1);
+  localStorage.setItem("products", JSON.stringify(products));
+  renderProducts();
+  renderAdminProducts();
 }
 
-.product img {
-  width: 100%;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 8px;
+// ===== ADMIN ORDERS =====
+function renderOrders(){
+  const list = document.getElementById("orderList");
+  const orders = JSON.parse(localStorage.getItem("orders")||"[]");
+  if(!orders.length){ list.innerHTML="<li>No requests yet.</li>"; return; }
+  list.innerHTML = orders.map(o=>`
+    <li style="margin-bottom:12px;border-bottom:1px solid #ddd;padding-bottom:8px;">
+      <strong>Name:</strong> ${o.name}<br>
+      <strong>Email:</strong> ${o.email}<br>
+      <strong>Contact:</strong> ${o.contact}<br>
+      <strong>Service:</strong> ${o.service}<br>
+      <strong>Message:</strong> ${o.message || '—'}
+    </li>
+  `).join("");
 }
 
-.buyBtn {
-  margin-top: 8px;
-  background: green;
-}
-
-.subhead { margin-top: 40px; }
-footer {
-  text-align: center;
-  padding: 20px;
-  color: var(--muted);
+// ===== ADMIN PRODUCT ORDERS =====
+function renderProductOrders(){
+  const list = document.getElementById("productOrderList");
+  const orders = JSON.parse(localStorage.getItem("productOrders")||"[]");
+  if(!orders.length){ list.innerHTML="<li>No product orders yet.</li>"; return; }
+  list.innerHTML = orders.map(o=>`
+    <li style="margin-bottom:12px;border-bottom:1px solid #ddd;padding-bottom:8px;">
+      <strong>Name:</strong> ${o.name}<br>
+      <strong>Email:</strong> ${o.email}<br>
+      <strong>WhatsApp:</strong> ${o.whatsapp}<br>
+      <strong>Address:</strong> ${o.address}<br>
+      <strong>Product:</strong> ${o.product}
+    </li>
+  `).join("");
 }
