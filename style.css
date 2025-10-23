@@ -84,6 +84,7 @@ button:hover { opacity: .9; }
   box-shadow: 0 3px 10px rgba(0,0,0,0.05);
   text-align: center;
   cursor: pointer;
+  position: relative;
 }
 
 .product img {
@@ -91,6 +92,11 @@ button:hover { opacity: .9; }
   height: 120px;
   object-fit: cover;
   border-radius: 8px;
+}
+
+.buyBtn {
+  margin-top: 8px;
+  background: green;
 }
 
 .subhead { margin-top: 40px; }
