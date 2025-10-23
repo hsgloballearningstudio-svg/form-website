@@ -97,6 +97,10 @@ button:hover {opacity: .9;}
   padding: 10px;
   box-shadow: 0 3px 10px rgba(0,0,0,0.05);
   text-align: center;
+  transition: transform 0.3s;
+}
+.product:hover {
+  transform: scale(1.05);
 }
 .product img {
   width: 100%;
@@ -105,30 +109,88 @@ button:hover {opacity: .9;}
   border-radius: 8px;
 }
 .subhead { margin-top: 40px; }
+
 footer {
-  text-align: center;
-  padding: 20px;
-  color: var(--muted);
+  font-size: 14px;
 }
+
+.footer {
+  background: #111;
+  color: #fff;
+  padding: 40px 20px 20px 20px;
+  font-size: 14px;
+}
+
 .footer-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
   gap: 20px;
-  background: var(--card);
-  padding: 30px 20px;
-  border-top: 2px solid var(--accent);
-  margin-top: 40px;
+  max-width: 1000px;
+  margin: auto;
 }
-.footer-section h3 {
-  font-size: 16px;
+
+.footer-section {
+  animation: fadeInUp 1s ease forwards;
+  opacity: 0;
+}
+.footer-section h4 {
+  color: var(--accent);
   margin-bottom: 10px;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+.footer-section ul li {
+  margin-bottom: 6px;
+}
+.footer-section a {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.footer-section a:hover {
   color: var(--accent);
 }
-.footer-section p, .footer-section li {
-  font-size: 14px;
-  margin: 4px 0;
-  list-style: none;
+.social-icons a {
+  display: inline-block;
+  margin-right: 10px;
+  background: var(--accent);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: 0.3s;
 }
-.footer-section ul { padding: 0; }
-.footer-section a { color: var(--text); text-decoration: none; }
-.footer-section a:hover { text-decoration: underline; }
+.social-icons a:hover {
+  transform: scale(1.1);
+  background: #fff;
+  color: var(--accent);
+}
+.footer-bottom {
+  text-align: center;
+  padding-top: 15px;
+  border-top: 1px solid #333;
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+@media(max-width: 768px){
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+  }
+  .footer-section {
+    margin-bottom: 20px;
+  }
+}
