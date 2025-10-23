@@ -32,16 +32,15 @@
         <input name="contact" required>
 
         <label>Service *</label>
-<select name="service" required>
-  <option value="">-- Choose service --</option>
-  <option value="Web Development">Web Development</option>
-  <option value="Graphic Design">Graphic Design</option>
-  <option value="Study Visa & Other Visa">Study Visa & Other Visa</option>
-  <option value="Computer Course">Computer Course</option>
-  <option value="Work Visa">Work Visa</option>
-  <option value="Other">Other</option>
-</select>
-
+        <select name="service" required>
+          <option value="">-- Choose service --</option>
+          <option value="Web Development">Web Development</option>
+          <option value="Graphic Design">Graphic Design</option>
+          <option value="Study Visa & Other Visa">Study Visa & Other Visa</option>
+          <option value="Computer Course">Computer Course</option>
+          <option value="Work Visa">Work Visa</option>
+          <option value="Other">Other</option>
+        </select>
 
         <label>Message</label>
         <textarea name="message" placeholder="Write details..."></textarea>
@@ -50,9 +49,22 @@
       </form>
       <div id="status"></div>
 
-      <h3 class="subhea
-        d">Available Products</h3>
+      <h3 class="subhead">Available Products</h3>
       <div id="productList" class="products"></div>
+    </section>
+
+    <!-- PRODUCT ORDER PAGE -->
+    <section id="productOrder" class="page">
+      <h2 id="prodTitleHeading"></h2>
+      <form id="productOrderForm">
+        <label>Customer Name *</label><input name="custName" required>
+        <label>Email *</label><input name="custEmail" type="email" required>
+        <label>WhatsApp / Phone *</label><input name="custPhone" required>
+        <label>Address *</label><textarea name="custAddress" required></textarea>
+        <input type="hidden" name="productId" id="prodIdInput">
+        <button type="submit">Submit Order</button>
+      </form>
+      <button onclick="showPage('home')">Back to Home</button>
     </section>
 
     <!-- ADMIN LOGIN -->
@@ -76,10 +88,13 @@
         <input id="pName" placeholder="Product Name">
         <input id="pPrice" placeholder="Price">
         <textarea id="pDesc" placeholder="Description"></textarea>
-        <input id="pImage" type="file" accept="image/*">
+        <input id="pImage" placeholder="Image URL">
         <button onclick="addProduct()">Add Product</button>
 
-        <h3>Customer Requests</h3>
+        <h3>Products List</h3>
+        <ul id="adminProductList"></ul>
+
+        <h3>Customer Orders</h3>
         <ul id="orderList"></ul>
       </div>
     </section>
@@ -89,4 +104,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
