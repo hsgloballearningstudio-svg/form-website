@@ -19,18 +19,13 @@
     <!-- HOME PAGE -->
     <section id="home" class="page active">
       <h2>Request a Service</h2>
-      <p>Select your service and we’ll get back to you soon.</p>
-
       <form id="serviceForm">
         <label>Name *</label>
         <input name="name" required>
-
         <label>Email *</label>
         <input name="email" type="email" required>
-
         <label>Contact *</label>
         <input name="contact" required>
-
         <label>Service *</label>
         <select name="service" required>
           <option value="">-- Choose service --</option>
@@ -41,10 +36,8 @@
           <option value="Work Visa">Work Visa</option>
           <option value="Other">Other</option>
         </select>
-
         <label>Message</label>
         <textarea name="message" placeholder="Write details..."></textarea>
-
         <button type="submit">Submit Request</button>
       </form>
       <div id="status"></div>
@@ -88,7 +81,7 @@
         <input id="pName" placeholder="Product Name">
         <input id="pPrice" placeholder="Price">
         <textarea id="pDesc" placeholder="Description"></textarea>
-        <input id="pImage" placeholder="Image URL">
+        <input id="pImage" type="file" accept="image/*">
         <button onclick="addProduct()">Add Product</button>
 
         <h3>Products List</h3>
