@@ -19,6 +19,8 @@
     <!-- HOME PAGE -->
     <section id="home" class="page active">
       <h2>Request a Service</h2>
+      <p>Select your service and we’ll get back to you soon.</p>
+
       <form id="serviceForm">
         <label>Name *</label>
         <input name="name" required>
@@ -46,18 +48,22 @@
       <div id="productList" class="products"></div>
     </section>
 
-    <!-- PRODUCT ORDER PAGE -->
-    <section id="productOrder" class="page">
-      <h2 id="prodTitleHeading"></h2>
-      <form id="productOrderForm">
-        <label>Customer Name *</label><input name="custName" required>
-        <label>Email *</label><input name="custEmail" type="email" required>
-        <label>WhatsApp / Phone *</label><input name="custPhone" required>
-        <label>Address *</label><textarea name="custAddress" required></textarea>
-        <input type="hidden" name="productId" id="prodIdInput">
+    <!-- PRODUCT ORDER FORM PAGE -->
+    <section id="productFormPage" class="page">
+      <h2>Product Order Form</h2>
+      <form id="productForm">
+        <label>Name *</label>
+        <input name="name" required>
+        <label>Email *</label>
+        <input name="email" type="email" required>
+        <label>WhatsApp / Contact *</label>
+        <input name="whatsapp" required>
+        <label>Home Address *</label>
+        <textarea name="address" required></textarea>
+        <input type="hidden" name="product">
         <button type="submit">Submit Order</button>
       </form>
-      <button onclick="showPage('home')">Back to Home</button>
+      <div id="productStatus"></div>
     </section>
 
     <!-- ADMIN LOGIN -->
@@ -84,11 +90,14 @@
         <input id="pImage" type="file" accept="image/*">
         <button onclick="addProduct()">Add Product</button>
 
-        <h3>Products List</h3>
-        <ul id="adminProductList"></ul>
+        <h3>Admin Products</h3>
+        <div id="adminProductList"></div>
 
-        <h3>Customer Orders</h3>
+        <h3>Customer Requests</h3>
         <ul id="orderList"></ul>
+
+        <h3>Product Orders</h3>
+        <ul id="productOrderList"></ul>
       </div>
     </section>
   </main>
