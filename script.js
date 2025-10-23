@@ -1,51 +1,60 @@
-// ===================== FOOTER YEAR =====================
 document.getElementById("year").textContent = new Date().getFullYear();
 
-// ===================== PAGE SWITCHING =====================
 function showPage(id){
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
-  if(id === "home") renderProducts();
-  if(id === "adminPanel") renderOrders();
+  if(id==="home") renderProducts();
+  if(id==="adminPanel") renderOrders();
+  if(id==="adminPanel") renderAdminProducts();
 }
 
-// ===================== SERVICE FORM =====================
+// ===== SERVICE FORM =====
 const form = document.getElementById("serviceForm");
-form.addEventListener("submit", e => {
+form.addEventListener("submit", e=>{
   e.preventDefault();
   const data = Object.fromEntries(new FormData(form).entries());
-  const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+  const orders = JSON.parse(localStorage.getItem("orders")||"[]");
   orders.push(data);
   localStorage.setItem("orders", JSON.stringify(orders));
   form.reset();
-  document.getElementById("status").textContent = "Request submitted successfully!";
-  setTimeout(()=> document.getElementById("status").textContent = "", 3000);
+  document.getElementById("status").textContent="Submitted successfully!";
+  setTimeout(()=> document.getElementById("status").textContent="",3000);
 });
 
-// ===================== ADMIN LOGIN =====================
-const ADMIN = { user: "admin", pass: "1234" };
-function loginAdmin() {
-  const u = document.getElementById("adminUser").value;
-  const p = document.getElementById("adminPass").value;
-  if(u === ADMIN.user && p === ADMIN.pass){
+// ===== PRODUCT ORDER FORM =====
+const productOrderForm = document.getElementById("productOrderForm");
+productOrderForm.addEventListener("submit", e=>{
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(productOrderForm).entries());
+  const custOrders = JSON.parse(localStorage.getItem("custOrders")||"[]");
+  custOrders.push(data);
+  localStorage.setItem("custOrders", JSON.stringify(custOrders));
+  alert("Customer order submitted!");
+  productOrderForm.reset();
+  showPage("home");
+});
+
+// ===== ADMIN LOGIN =====
+const ADMIN = { user:"admin", pass:"1234" };
+function loginAdmin(){
+  const u=document.getElementById("adminUser").value;
+  const p=document.getElementById("adminPass").value;
+  if(u===ADMIN.user && p===ADMIN.pass){
     showPage("adminPanel");
-    document.getElementById("loginMsg").textContent = "";
+    document.getElementById("loginMsg").textContent="";
   } else {
-    document.getElementById("loginMsg").textContent = "Invalid username or password!";
+    document.getElementById("loginMsg").textContent="Invalid username or password!";
   }
 }
-function logout() { showPage("home"); }
+function logout(){ showPage("home"); }
 
-// ===================== PRODUCTS =====================
+// ===== PRODUCTS =====
 function renderProducts(){
-  const list = document.getElementById("productList");
-  const products = JSON.parse(localStorage.getItem("products") || "[]");
-  if(!products.length){ 
-    list.innerHTML = "<p>No products added yet.</p>"; 
-    return; 
-  }
-  list.innerHTML = products.map(p => `
-    <div class="product">
+  const list=document.getElementById("productList");
+  const products=JSON.parse(localStorage.getItem("products")||"[]");
+  if(!products.length){ list.innerHTML="<p>No products added yet.</p>"; return; }
+  list.innerHTML=products.map((p,i)=>`
+    <div class="product" onclick="openProductForm(${i})">
       <img src="${p.img}" alt="${p.name}">
       <h4>${p.name}</h4>
       <p>${p.desc}</p>
@@ -54,57 +63,73 @@ function renderProducts(){
   `).join("");
 }
 
-// ===================== ADD PRODUCT (ADMIN) =====================
-function addProduct(){
-  const name = document.getElementById("pName").value.trim();
-  const price = document.getElementById("pPrice").value.trim();
-  const desc = document.getElementById("pDesc").value.trim();
-  const fileInput = document.getElementById("pImage");
-
-  if(!name || !price){
-    return alert("Product name and price are required!");
-  }
-
-  // Read file if selected
-  if(fileInput.files && fileInput.files[0]){
-    const reader = new FileReader();
-    reader.onload = function(e){
-      saveProduct({name, price, desc, img: e.target.result});
-    };
-    reader.readAsDataURL(fileInput.files[0]);
-  } else {
-    const url = prompt("Enter image URL for product:","https://via.placeholder.com/200");
-    saveProduct({name, price, desc, img: url});
-  }
+function openProductForm(index){
+  const products = JSON.parse(localStorage.getItem("products")||"[]");
+  const prod = products[index];
+  document.getElementById("prodTitleHeading").textContent = prod.name;
+  document.getElementById("prodIdInput").value = index;
+  showPage("productOrder");
 }
 
-function saveProduct(product){
-  const products = JSON.parse(localStorage.getItem("products") || "[]");
-  products.push(product);
+// ===== ADD PRODUCT =====
+function addProduct(){
+  const name = document.getElementById("pName").value;
+  const price = document.getElementById("pPrice").value;
+  const desc = document.getElementById("pDesc").value;
+  const img = document.getElementById("pImage").value;
+
+  if(!name || !price || !img) return alert("Fill all product fields!");
+
+  const products = JSON.parse(localStorage.getItem("products")||"[]");
+  products.push({ name, price, desc, img });
   localStorage.setItem("products", JSON.stringify(products));
   alert("Product added successfully!");
-  document.getElementById("pName").value = "";
-  document.getElementById("pPrice").value = "";
-  document.getElementById("pDesc").value = "";
-  document.getElementById("pImage").value = "";
   renderProducts();
+  renderAdminProducts();
+  document.getElementById("pName").value="";
+  document.getElementById("pPrice").value="";
+  document.getElementById("pDesc").value="";
+  document.getElementById("pImage").value="";
 }
 
-// ===================== ADMIN ORDERS =====================
+// ===== ADMIN PRODUCTS LIST WITH DELETE =====
+function renderAdminProducts(){
+  const list = document.getElementById("adminProductList");
+  const products = JSON.parse(localStorage.getItem("products")||"[]");
+  if(!products.length){ list.innerHTML="<li>No products yet.</li>"; return; }
+
+  list.innerHTML = products.map((p,i)=>`
+    <li>
+      ${p.name} - ${p.price} 
+      <button onclick="deleteProduct(${i})" style="margin-left:10px;">Delete</button>
+    </li>
+  `).join("");
+}
+
+function deleteProduct(index){
+  const products = JSON.parse(localStorage.getItem("products")||"[]");
+  products.splice(index,1);
+  localStorage.setItem("products", JSON.stringify(products));
+  renderProducts();
+  renderAdminProducts();
+}
+
+// ===== ADMIN ORDERS =====
 function renderOrders(){
   const list = document.getElementById("orderList");
-  const orders = JSON.parse(localStorage.getItem("orders") || "[]");
-  if(!orders.length){ 
-    list.innerHTML = "<li>No requests yet.</li>"; 
-    return; 
-  }
-  list.innerHTML = orders.map(o => `
+  const orders = JSON.parse(localStorage.getItem("orders")||"[]");
+  const custOrders = JSON.parse(localStorage.getItem("custOrders")||"[]");
+  const allOrders = orders.concat(custOrders);
+
+  if(!allOrders.length){ list.innerHTML="<li>No requests yet.</li>"; return; }
+
+  list.innerHTML = allOrders.map(o=>`
     <li style="margin-bottom:12px;border-bottom:1px solid #ddd;padding-bottom:8px;">
-      <strong>Name:</strong> ${o.name}<br>
-      <strong>Email:</strong> ${o.email}<br>
-      <strong>Contact:</strong> ${o.contact}<br>
-      <strong>Service:</strong> ${o.service}<br>
-      <strong>Message:</strong> ${o.message || '—'}
+      <strong>Name:</strong> ${o.name || o.custName}<br>
+      <strong>Email:</strong> ${o.email || o.custEmail}<br>
+      <strong>Contact:</strong> ${o.contact || o.custPhone}<br>
+      <strong>Service / Product:</strong> ${o.service || JSON.parse(localStorage.getItem("products"))[o.productId]?.name}<br>
+      <strong>Address / Message:</strong> ${o.message || o.custAddress || '—'}
     </li>
   `).join("");
 }
