@@ -1,126 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HS Global Learning Studio</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header class="topbar">
-    <h1>HS Global Learning Studio</h1>
-    <nav>
-      <button onclick="showPage('home')">Service</button>
-      <button onclick="showPage('productsPage')">Products</button>
-      <button onclick="showPage('adminLogin')">Admin</button>
-    </nav>
-  </header>
-
-  <main>
-    <!-- HOME / Service Form -->
-    <section id="home" class="page active">
-      <h2>Request a Service</h2>
-      <p>Select your service and we’ll get back to you soon.</p>
-      <form id="serviceForm">
-        <label>Name *</label>
-        <input name="name" required>
-        <label>Email *</label>
-        <input name="email" type="email" required>
-        <label>Contact *</label>
-        <input name="contact" required>
-        <label>Service *</label>
-        <select name="service" required>
-          <option value="">-- Choose service --</option>
-          <option value="Web Development">Web Development</option>
-          <option value="Graphic Design">Graphic Design</option>
-          <option value="Study Visa & Other Visa">Study Visa & Other Visa</option>
-          <option value="Computer Course">Computer Course</option>
-          <option value="Work Visa">Work Visa</option>
-          <option value="Other">Other</option>
-        </select>
-        <label>Message</label>
-        <textarea name="message" placeholder="Write details..."></textarea>
-        <button type="submit">Submit Request</button>
-      </form>
-      <div id="status"></div>
-    </section>
-
-    <!-- PRODUCTS / Buy Now -->
-    <section id="productsPage" class="page">
-      <h2>Products for Sale</h2>
-      <div id="productListBuy" class="products"></div>
-    </section>
-
-    <!-- PRODUCT ORDER FORM -->
-    <section id="productFormPage" class="page">
-      <h2>Buy Product</h2>
-      <form id="productOrderForm">
-        <label>Product Name</label>
-        <input name="productName" id="selectedProduct" readonly>
-        <label>Name *</label>
-        <input name="name" required>
-        <label>Email *</label>
-        <input name="email" type="email" required>
-        <label>Contact / WhatsApp *</label>
-        <input name="contact" required>
-        <label>Address *</label>
-        <textarea name="address" required></textarea>
-        <button type="submit">Submit Order</button>
-      </form>
-      <div id="productOrderStatus"></div>
-      <button onclick="showPage('productsPage')" style="margin-top:15px;">Back to Products</button>
-    </section>
-
-    <!-- ADMIN LOGIN -->
-    <section id="adminLogin" class="page">
-      <div class="card login-card">
-        <h2>Admin Login</h2>
-        <input id="adminUser" placeholder="Username">
-        <input id="adminPass" type="password" placeholder="Password">
-        <button onclick="loginAdmin()">Login</button>
-        <div id="loginMsg"></div>
-      </div>
-    </section>
-
-    <!-- ADMIN PANEL -->
-    <section id="adminPanel" class="page">
-      <div class="card">
-        <h2>Admin Dashboard</h2>
-        <button class="logout" onclick="logout()">Logout</button>
-
-        <h3>Add New Product</h3>
-        <input id="pName" placeholder="Product Name">
-        <input id="pPrice" placeholder="Price">
-        <textarea id="pDesc" placeholder="Description"></textarea>
-        <input id="pImage" type="file" accept="image/*">
-        <button onclick="addProduct()">Add Product</button>
-
-        <h3>All Products</h3>
-        <ul id="adminProductList"></ul>
-
-        <h3>Service Requests & Product Orders</h3>
-        <ul id="orderList"></ul>
-      </div>
-    </section>
-  </main>
-
-  <footer>© <span id="year"></span> HS Global Learning Studio</footer>
-  <script src="script.js"></script>
-  <footer>
+<footer class="footer">
   <div class="footer-container">
-    <!-- Contacts & Socials -->
     <div class="footer-section">
-      <h3>Contact & Socials</h3>
-      <p>WhatsApp: <a href="https://wa.me/923086036049" target="_blank">+92 308 6036049</a></p>
-      <p>Facebook: <a href="https://facebook.com/hsgloballearningstudio" target="_blank">HS Global Learning Studio</a></p>
-      <p>Instagram: <a href="https://instagram.com/hsgloballearningstudio" target="_blank">HS Global Learning Studio</a></p>
-      <p>YouTube: <a href="https://youtube.com/@hsgloballearningstudio" target="_blank">HS Global Learning Studio</a></p>
-      <p>TikTok: <a href="https://www.tiktok.com/@hsgloballearningstudio" target="_blank">HS Global Learning Studio</a></p>
-    </div>
-
-    <!-- Services / Visas -->
-    <div class="footer-section">
-      <h3>Visa Services</h3>
+      <h4>Services</h4>
       <ul>
         <li>Study Visa</li>
         <li>Work Visa</li>
@@ -129,32 +10,34 @@
       </ul>
     </div>
 
-    <!-- Courses / Learning -->
     <div class="footer-section">
-      <h3>Courses / Learning</h3>
+      <h4>Courses & Learning</h4>
       <ul>
         <li>Computer Course</li>
-        <li>Web Development Course</li>
-        <li>Graphic Design Course</li>
-        <li>Video Editing Course</li>
+        <li>Web Development</li>
+        <li>Graphics Design</li>
+        <li>Video Editing</li>
       </ul>
     </div>
 
-    <!-- Other Services -->
     <div class="footer-section">
-      <h3>Our Services</h3>
+      <h4>Our Services</h4>
       <ul>
-        <li>Product Selling (All Types)</li>
-        <li>Printing Services</li>
-        <li>Composing Services</li>
+        <li>Product Selling</li>
+        <li>Printing & Composing</li>
         <li>Designing Services</li>
-        <li>Website Building & Web Designer</li>
+        <li>Web Development / Design</li>
       </ul>
+      <div class="social-icons">
+        <a href="https://www.facebook.com/hsgloballearningstudio" target="_blank">FB</a>
+        <a href="https://www.instagram.com/hsgloballearningstudio" target="_blank">IG</a>
+        <a href="https://www.youtube.com/@hsgloballearningstudio" target="_blank">YT</a>
+        <a href="https://www.tiktok.com/@hsgloballearningstudio" target="_blank">TT</a>
+      </div>
+      <p>Contact / WhatsApp: <a href="tel:+923086036049">+92 308 6036049</a></p>
     </div>
   </div>
-
-  <p style="text-align:center; margin-top:20px;">© <span id="year"></span> HS Global Learning Studio</p>
+  <div class="footer-bottom">
+    © <span id="year"></span> HS Global Learning Studio. All Rights Reserved.
+  </div>
 </footer>
-
-</body>
-</html>
