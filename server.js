@@ -3,8 +3,9 @@ document.getElementById("year").textContent = new Date().getFullYear();
 function showPage(id){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
-  if(id==="home") renderProducts();
-  if(id==="adminPanel") { renderOrders(); renderAdminProducts(); }
+  if(id==="home") renderProductsHome();
+  if(id==="productsPage") renderProductsBuy();
+  if(id==="adminPanel") renderAdminProducts();
 }
 
 // ===== SERVICE FORM =====
@@ -13,7 +14,7 @@ form.addEventListener("submit", e=>{
   e.preventDefault();
   const data = Object.fromEntries(new FormData(form).entries());
   const orders = JSON.parse(localStorage.getItem("orders")||"[]");
-  orders.push(data);
+  orders.push({...data, type:"service"});
   localStorage.setItem("orders", JSON.stringify(orders));
   form.reset();
   document.getElementById("status").textContent="Submitted! We’ll contact within 12 hrs.";
@@ -25,12 +26,13 @@ const productOrderForm = document.getElementById("productOrderForm");
 productOrderForm.addEventListener("submit", e=>{
   e.preventDefault();
   const data = Object.fromEntries(new FormData(productOrderForm).entries());
-  const custOrders = JSON.parse(localStorage.getItem("custOrders")||"[]");
-  custOrders.push(data);
-  localStorage.setItem("custOrders", JSON.stringify(custOrders));
-  alert("Customer order submitted!");
+  const orders = JSON.parse(localStorage.getItem("orders")||"[]");
+  orders.push({...data, type:"product"});
+  localStorage.setItem("orders", JSON.stringify(orders));
   productOrderForm.reset();
-  showPage("home");
+  document.getElementById("productOrderStatus").textContent="Order submitted! Admin will contact you within 12 hrs.";
+  setTimeout(()=> document.getElementById("productOrderStatus").textContent="",3000);
+  showPage("productsPage");
 });
 
 // ===== ADMIN LOGIN =====
@@ -48,92 +50,97 @@ function loginAdmin(){
 function logout(){ showPage("home"); }
 
 // ===== PRODUCTS =====
-function renderProducts(){
-  const list=document.getElementById("productList");
-  const products=JSON.parse(localStorage.getItem("products")||"[]");
-  if(!products.length){ list.innerHTML="<p>No products added yet.</p>"; return; }
-  list.innerHTML=products.map((p,i)=>`
-    <div class="product">
-      <img src="${p.img}" alt="${p.name}">
-      <h4>${p.name}</h4>
-      <p>${p.desc}</p>
-      <strong>${p.price}</strong>
-      <button class="buyBtn" onclick="openProductForm(${i})">Buy Now</button>
-    </div>
-  `).join("");
-}
-
-function openProductForm(index){
-  const products = JSON.parse(localStorage.getItem("products")||"[]");
-  const prod = products[index];
-  document.getElementById("prodTitleHeading").textContent = prod.name;
-  document.getElementById("prodIdInput").value = index;
-  showPage("productOrder");
-}
-
-// ===== ADD PRODUCT WITH IMAGE UPLOAD =====
 function addProduct(){
   const name = document.getElementById("pName").value;
   const price = document.getElementById("pPrice").value;
   const desc = document.getElementById("pDesc").value;
   const file = document.getElementById("pImage").files[0];
-
   if(!name || !price || !file) return alert("Fill all product fields!");
-  
   const reader = new FileReader();
   reader.onload = ()=>{
     const products = JSON.parse(localStorage.getItem("products")||"[]");
-    products.push({ name, price, desc, img: reader.result });
+    products.push({name, price, desc, img:reader.result});
     localStorage.setItem("products", JSON.stringify(products));
-    alert("Product added successfully!");
-    renderProducts();
+    renderProductsHome();
+    renderProductsBuy();
     renderAdminProducts();
-    document.getElementById("pName").value="";
-    document.getElementById("pPrice").value="";
-    document.getElementById("pDesc").value="";
-    document.getElementById("pImage").value="";
   };
   reader.readAsDataURL(file);
 }
 
-// ===== ADMIN PRODUCTS LIST WITH DELETE =====
-function renderAdminProducts(){
-  const list = document.getElementById("adminProductList");
+// ===== RENDER PRODUCTS =====
+function renderProductsHome(){
+  const list = document.getElementById("productList");
   const products = JSON.parse(localStorage.getItem("products")||"[]");
-  if(!products.length){ list.innerHTML="<li>No products yet.</li>"; return; }
-
   list.innerHTML = products.map((p,i)=>`
-    <li>
-      ${p.name} - ${p.price} 
-      <button onclick="deleteProduct(${i})" style="margin-left:10px;">Delete</button>
-    </li>
+    <div class="product">
+      <img src="${p.img}" alt="${p.name}">
+      <h4>${p.name}</h4>
+      <p>${p.desc}</p>
+      <strong>${p.price}</strong>
+    </div>
   `).join("");
 }
 
+function renderProductsBuy(){
+  const list = document.getElementById("productListBuy");
+  const products = JSON.parse(localStorage.getItem("products")||"[]");
+  list.innerHTML = products.map((p,i)=>`
+    <div class="product">
+      <img src="${p.img}" alt="${p.name}">
+      <h4>${p.name}</h4>
+      <p>${p.desc}</p>
+      <strong>${p.price}</strong>
+      <button onclick="selectProduct('${p.name}')">Buy Now</button>
+    </div>
+  `).join("");
+}
+
+function selectProduct(name){
+  document.getElementById("selectedProduct").value = name;
+  showPage("productFormPage");
+}
+
+// ===== ADMIN PANEL =====
+function renderAdminProducts(){
+  const list = document.getElementById("adminProductList");
+  const products = JSON.parse(localStorage.getItem("products")||"[]");
+  if(!products.length){ list.innerHTML="<li>No products added yet.</li>"; return; }
+  list.innerHTML = products.map((p,i)=>`
+    <li>
+      <strong>${p.name}</strong> - ${p.price} 
+      <button onclick="deleteProduct(${i})" style="margin-left:10px;">Delete</button>
+    </li>
+  `).join("");
+
+  renderOrders();
+}
+
+// ===== DELETE PRODUCT =====
 function deleteProduct(index){
   const products = JSON.parse(localStorage.getItem("products")||"[]");
   products.splice(index,1);
   localStorage.setItem("products", JSON.stringify(products));
-  renderProducts();
+  renderProductsHome();
+  renderProductsBuy();
   renderAdminProducts();
 }
 
-// ===== ADMIN ORDERS =====
+// ===== ORDERS =====
 function renderOrders(){
   const list = document.getElementById("orderList");
   const orders = JSON.parse(localStorage.getItem("orders")||"[]");
-  const custOrders = JSON.parse(localStorage.getItem("custOrders")||"[]");
-  const allOrders = orders.concat(custOrders);
+  if(!orders.length){ list.innerHTML="<li>No requests yet.</li>"; return; }
 
-  if(!allOrders.length){ list.innerHTML="<li>No requests yet.</li>"; return; }
-
-  list.innerHTML = allOrders.map(o=>`
+  list.innerHTML = orders.map(o=>`
     <li style="margin-bottom:12px;border-bottom:1px solid #ddd;padding-bottom:8px;">
-      <strong>Name:</strong> ${o.name || o.custName}<br>
-      <strong>Email:</strong> ${o.email || o.custEmail}<br>
-      <strong>Contact:</strong> ${o.contact || o.custPhone}<br>
-      <strong>Service / Product:</strong> ${o.service || JSON.parse(localStorage.getItem("products"))[o.productId]?.name}<br>
-      <strong>Address / Message:</strong> ${o.message || o.custAddress || '—'}
+      <strong>Type:</strong> ${o.type}<br>
+      <strong>Product / Service:</strong> ${o.service || o.productName}<br>
+      <strong>Name:</strong> ${o.name}<br>
+      <strong>Email:</strong> ${o.email}<br>
+      <strong>Contact:</strong> ${o.contact}<br>
+      ${o.address ? `<strong>Address:</strong> ${o.address}<br>` : ""}
+      ${o.message ? `<strong>Message:</strong> ${o.message}` : ""}
     </li>
   `).join("");
 }
