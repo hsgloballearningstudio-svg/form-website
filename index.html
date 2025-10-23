@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HS Global Learning Studio | Services & Admin</title>
+  <title>HS Global Learning Studio</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,12 +11,13 @@
     <h1>HS Global Learning Studio</h1>
     <nav>
       <button onclick="showPage('home')">Home</button>
-      <button onclick="showPage('adminLogin')">Admin</button>
+      <button onclick="showPage('productsPage')">Products</button>
+      <button onclick="showPage('adminPanel')">Admin</button>
     </nav>
   </header>
 
   <main>
-    <!-- HOME PAGE -->
+    <!-- HOME / Service Form -->
     <section id="home" class="page active">
       <h2>Request a Service</h2>
       <p>Select your service and we’ll get back to you soon.</p>
@@ -48,40 +49,35 @@
       <div id="productList" class="products"></div>
     </section>
 
-    <!-- PRODUCT ORDER FORM PAGE -->
-    <section id="productFormPage" class="page">
-      <h2>Product Order Form</h2>
-      <form id="productForm">
-        <label>Name *</label>
-        <input name="name" required>
-        <label>Email *</label>
-        <input name="email" type="email" required>
-        <label>WhatsApp / Contact *</label>
-        <input name="whatsapp" required>
-        <label>Home Address *</label>
-        <textarea name="address" required></textarea>
-        <input type="hidden" name="product">
-        <button type="submit">Submit Order</button>
-      </form>
-      <div id="productStatus"></div>
+    <!-- PRODUCTS / Buy Now -->
+    <section id="productsPage" class="page">
+      <h2>Products for Sale</h2>
+      <div id="productListBuy" class="products"></div>
+
+      <section id="productFormPage" class="page">
+        <h2>Buy Product</h2>
+        <form id="productOrderForm">
+          <label>Product Name</label>
+          <input name="productName" id="selectedProduct" readonly>
+          <label>Name *</label>
+          <input name="name" required>
+          <label>Email *</label>
+          <input name="email" type="email" required>
+          <label>Contact / WhatsApp *</label>
+          <input name="contact" required>
+          <label>Address *</label>
+          <textarea name="address" required></textarea>
+          <button type="submit">Submit Order</button>
+        </form>
+        <div id="productOrderStatus"></div>
+        <button onclick="showPage('productsPage')" style="margin-top:15px;">Back to Products</button>
+      </section>
     </section>
 
-    <!-- ADMIN LOGIN -->
-    <section id="adminLogin" class="page">
-      <div class="card login-card">
-        <h2>Admin Login</h2>
-        <input id="adminUser" placeholder="Username">
-        <input id="adminPass" type="password" placeholder="Password">
-        <button onclick="loginAdmin()">Login</button>
-        <div id="loginMsg"></div>
-      </div>
-    </section>
-
-    <!-- ADMIN DASHBOARD -->
+    <!-- ADMIN PANEL -->
     <section id="adminPanel" class="page">
       <div class="card">
         <h2>Admin Dashboard</h2>
-        <button class="logout" onclick="logout()">Logout</button>
 
         <h3>Add New Product</h3>
         <input id="pName" placeholder="Product Name">
@@ -90,14 +86,11 @@
         <input id="pImage" type="file" accept="image/*">
         <button onclick="addProduct()">Add Product</button>
 
-        <h3>Admin Products</h3>
-        <div id="adminProductList"></div>
+        <h3>All Products</h3>
+        <ul id="adminProductList"></ul>
 
-        <h3>Customer Requests</h3>
+        <h3>Service Requests & Product Orders</h3>
         <ul id="orderList"></ul>
-
-        <h3>Product Orders</h3>
-        <ul id="productOrderList"></ul>
       </div>
     </section>
   </main>
