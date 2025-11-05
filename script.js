@@ -3,46 +3,11 @@
 // =========================
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const SUPABASE_URL = "https://agqnakijoxjdcozoabox.supabase.co"; // <-- replace if different
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncW5ha2lqb3hqZGNvem9hYm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNDM1NzcsImV4cCI6MjA3NzkxOTU3N30.9N2xn3k5EtmKyCL04GUzmbX1rsSMd3pqJwSBX6IxM_4"; // <-- replace with your full anon key
+const SUPABASE_URL = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncW5ha2lqb3hqZGNvem9hYm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNDM1NzcsImV4cCI6MjA3NzkxOTU3N30.9N2xn3k5EtmKyCL04GUzmbX1rsSMd3pqJwSBX6IxM_4";
+const SUPABASE_ANON_KEY = "⚠️Yahan Apni Actual Anon (public) Key Paste Karo⚠️";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// =========================
-// Helper: nowString (optional)
-function nowString(){
-  const d = new Date();
-  return d.toLocaleString();
-}
-
-// =========================
-// PAGE UTILS (keep these from your original file)
-// =========================
-function hideAllPages(){
-  document.querySelectorAll(".page").forEach(p => {
-    p.classList.remove("active");
-    p.style.display = 'none';
-  });
-}
-function showPage(pageId){
-  hideAllPages();
-  const el = document.getElementById(pageId);
-  if(!el) return;
-  el.classList.add("active");
-  el.style.display = 'block';
-  if(pageId === 'productsPage') renderProductsBuy();
-  if(pageId === 'adminPanel') {
-    renderProductsAdmin();
-    renderServiceSubmissions();
-    renderOrders();
-    showAdminTab('manageProducts');
-  }
-}
-window.showPage = showPage;
-
-// =========================
-// SERVICE FORM (Supabase insert) — final handler
-// =========================
 const serviceForm = document.getElementById("serviceForm");
 
 serviceForm.addEventListener("submit", async (e) => {
@@ -52,32 +17,23 @@ serviceForm.addEventListener("submit", async (e) => {
   const email = document.getElementById("svc_email").value.trim();
   const contact = document.getElementById("svc_contact").value.trim();
   const service = document.getElementById("svc_service").value;
-  const message = document.getElementById("svc_message").value.trim();
+  const description = document.getElementById("svc_message").value.trim();
 
-  // QUICK CLIENT-SIDE CHECK
-  if(!name || !email || !contact || !service){
-    document.getElementById("status").textContent = "Please fill required fields.";
-    return;
-  }
+  const { data, error } = await supabase
+    .from("service_forms")
+    .insert([{ name, email, contact, service, description }]);
 
   const statusMsg = document.getElementById("status");
-  statusMsg.textContent = "Submitting...";
-
-  try {
-    const { data, error } = await supabase
-      .from("service_forms")    // <-- make sure this table name exists in Supabase
-      .insert([{ name, email, contact, service, message }]);
-
-    if (error) throw error;
-
-    statusMsg.textContent = "✅ Submitted! We'll contact within 12 hrs.";
+  if (error) {
+    console.error("Supabase insert error:", error);
+    statusMsg.textContent = "❌ Error saving data. Check console.";
+  } else {
+    console.log("Insert Success:", data);
+    statusMsg.textContent = "✅ Form submitted successfully!";
     serviceForm.reset();
-  } catch (err) {
-    console.error("Supabase insert error:", err);
-    statusMsg.textContent = "❌ Error saving data (see console).";
   }
 
-  setTimeout(()=> statusMsg.textContent = "", 3000);
+  setTimeout(() => (statusMsg.textContent = ""), 4000);
 });
 
 // =========================
@@ -294,4 +250,5 @@ function showAdminTab(tabId){
   if(el) el.style.display = 'block';
 }
 window.showAdminTab = showAdminTab;
+
 
