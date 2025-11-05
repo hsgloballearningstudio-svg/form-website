@@ -21,9 +21,25 @@ serviceForm.addEventListener("submit", async (e) => {
   const service = document.getElementById("svc_service").value;
   const description = document.getElementById("svc_message").value.trim();
 
-  const { data, error } = await supabase
-    .from("service_forms")
-    .insert([{ name, email, contact, service, description }]);
+const { data, error } = await supabase
+  .from('products')  // 👈 yahan table ka naam change
+  .insert([
+    {
+      name: document.getElementById('name').value,
+      price: parseFloat(document.getElementById('price').value), // 👈 number me convert kar raha hai
+      description: document.getElementById('description').value,
+      image_url: document.getElementById('image_url').value,
+    },
+  ]);
+
+if (error) {
+  console.error('Supabase insert error:', error);
+  alert('Error saving product data (see console).');
+} else {
+  alert('Product added successfully!');
+  e.target.reset();
+}
+
 
   const statusMsg = document.getElementById("status");
   if (error) {
@@ -252,6 +268,7 @@ function showAdminTab(tabId){
   if(el) el.style.display = 'block';
 }
 window.showAdminTab = showAdminTab;
+
 
 
 
