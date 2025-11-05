@@ -1,3 +1,35 @@
+// Step 2 — Connect Supabase to your website
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+// ⚠️ In dono jagah apni real values paste karo jo tumne Step 1 mein copy ki thi
+const SUPABASE_URL = 'https://agqnakijoxjdcozoabox.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncW5ha2lqb3hqZGNvem9hYm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNDM1NzcsImV4cCI6MjA3NzkxOTU3N30.9N2xn3k5EtmKyCL04GUzmbX1rsSMd3pqJwSBX6IxM_4'
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const form = document.getElementById('serviceForm');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const contact = document.getElementById('contact').value;
+  const service = document.getElementById('service').value;
+  const message = document.getElementById('message').value;
+
+  const { data, error } = await supabase
+    .from('service_forms')
+    .insert([{ name, email, contact, service, message }]);
+
+  if (error) {
+    alert('Error saving data: ' + error.message);
+  } else {
+    alert('Form submitted successfully!');
+    form.reset();
+  }
+});
+
 // Helper to get formatted date-time
 function nowString(){
   const d = new Date();
@@ -341,3 +373,4 @@ window.renderProductsBuy = renderProductsBuy;
 window.renderProductsAdmin = renderProductsAdmin;
 window.renderServiceSubmissions = renderServiceSubmissions;
 window.renderOrders = renderOrders;
+
