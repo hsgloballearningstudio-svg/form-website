@@ -3,10 +3,10 @@
 // =========================
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const SUPABASE_URL = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncW5ha2lqb3hqZGNvem9hYm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNDM1NzcsImV4cCI6MjA3NzkxOTU3N30.9N2xn3k5EtmKyCL04GUzmbX1rsSMd3pqJwSBX6IxM_4";
-const SUPABASE_ANON_KEY = "⚠️Yahan Apni Actual Anon (public) Key Paste Karo⚠️";
+const supabaseUrl = 'https://agqnakijoxjdcozoabox.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncW5ha2lqb3hqZGNvem9hYm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNDM1NzcsImV4cCI6MjA3NzkxOTU3N30.9N2xn3k5EtmKyCL04GUzmbX1rsSMd3pqJwSBX6IxM_4';
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const serviceForm = document.getElementById("serviceForm");
 
@@ -250,5 +250,6 @@ function showAdminTab(tabId){
   if(el) el.style.display = 'block';
 }
 window.showAdminTab = showAdminTab;
+
 
 
