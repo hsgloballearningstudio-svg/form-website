@@ -20,8 +20,6 @@
   <main>
     <!-- HOME / Service Form -->
     <section id="home" class="page active">
-      <label>Description</label>
-<textarea name="description" id="svc_message" required></textarea>
       <h2>Request a Service</h2>
       <p>Select your service and we’ll get back to you soon.</p>
 
@@ -34,18 +32,19 @@
         <input name="contact" id="svc_contact" required>
         <label>Service *</label>
         <select name="service" id="svc_service" required>
-  <option value="">-- Choose service --</option>
-  <option>Graphics Design Learn</option>
-  <option>Web Development Learn</option>
-  <option>Computer Course Learn</option>
-  <option>Printing Service Available (Penaflex, V. Cards, Cash Books, Letter Pads, Stamps etc.) </option>
-  <option>Website Development / Design (Creating Websites / Composing etc.) </option>
-  <option>Videos Editing Services</option>
-   <option>Study Visa / Other Visa Services</option>
-</select>
+          <option value="">-- Choose service --</option>
+          <option>Graphics Design Learn</option>
+          <option>Web Development Learn</option>
+          <option>Computer Course Learn</option>
+          <option>Printing Service Available (Penaflex, V. Cards, Cash Books, Letter Pads, Stamps etc.)</option>
+          <option>Website Development / Design (Creating Websites / Composing etc.)</option>
+          <option>Videos Editing Services</option>
+          <option>Study Visa / Other Visa Services</option>
+        </select>
 
         <label>Description</label>
         <textarea name="message" id="svc_message" placeholder="Write details..."></textarea>
+
         <button type="submit">Submit Request</button>
       </form>
       <div id="status" class="muted"></div>
@@ -81,7 +80,6 @@
     <section id="adminLogin" class="page" style="display:none;">
       <div class="login-card card">
         <h2>Admin Login</h2>
-        <input type="number" id="price" name="price" placeholder="Enter price" required>
         <input type="text" id="adminUser" placeholder="Username" class="loginInput">
         <input type="password" id="adminPass" placeholder="Password" class="loginInput">
         <button onclick="loginAdmin()" class="loginBtn">Login</button>
@@ -107,7 +105,7 @@
             <label>Product Name</label>
             <input id="pName" required>
             <label>Price</label>
-            <input id="pPrice" required>
+            <input id="pPrice" type="number" required>
             <label>Description</label>
             <textarea id="pDesc"></textarea>
             <label>Location</label>
@@ -122,9 +120,9 @@
           <!-- Edit form (hidden until edit) -->
           <div id="editProductCard" class="card" style="display:none; margin-top:16px;">
             <h4>Edit Product</h4>
-            <input id="edit_index" type="hidden">
+            <input id="edit_id" type="hidden">
             <label>Name</label><input id="edit_pName">
-            <label>Price</label><input id="edit_pPrice">
+            <label>Price</label><input id="edit_pPrice" type="number">
             <label>Description</label><textarea id="edit_pDesc"></textarea>
             <label>Location</label><input id="edit_pLocation">
             <label>Change Image (optional)</label><input id="edit_pImage" type="file" accept="image/*">
@@ -191,12 +189,7 @@
     </div>
     <p>© HS Global Learning Studio. All Rights Reserved.</p>
   </footer>
-    <!-- 👇 Ye line yahan lagani hai -->
+
   <script type="module" src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
