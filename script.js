@@ -80,38 +80,30 @@ serviceForm.addEventListener("submit", async (e) => {
 // --------------------------
 // PRODUCT ORDER FORM -> supabase insert
 // --------------------------
+// PRODUCT ORDER FORM -> supabase insert
 const orderForm = document.getElementById("productOrderForm");
 orderForm.addEventListener("submit", async (e) => {
   e.preventDefault();
+
   const status = document.getElementById("productOrderStatus");
 
-  const product_name = document.getElementById("selectedProduct").value;
+  const productName = document.getElementById("selectedProduct").value.trim();
   const name = document.getElementById("ord_name").value.trim();
   const email = document.getElementById("ord_email").value.trim();
   const contact = document.getElementById("ord_contact").value.trim();
   const address = document.getElementById("ord_address").value.trim();
 
-  if(!product_name || !name || !email || !contact || !address){
-    status.textContent = "Please fill required fields.";
-    return;
-  }
-  status.textContent = "Submitting order...";
+  const { data, error } = await supabase
+    .from("product_orders")  // must match table name in Supabase
+    .insert([{ product_name: productName, name, email, contact, address }]);
 
-  try {
-    const { data, error } = await supabase
-      .from("product_orders")
-      .insert([{ product_name, name, email, contact, address }]);
-
-    if (error) throw error;
-    status.textContent = "✅ Order submitted! We'll contact you.";
+  if (error) {
+    console.error("Error adding product:", error);
+    status.textContent = "Error placing order. Please try again.";
+  } else {
+    status.textContent = "Order submitted successfully!";
     orderForm.reset();
-    showPage('productsPage');
-  } catch (err) {
-    console.error("Supabase insert error:", err);
-    status.textContent = "❌ Error saving order. See console.";
   }
-
-  setTimeout(()=> status.textContent = "", 3500);
 });
 
 // --------------------------
@@ -420,6 +412,7 @@ function showAdminTab(tabId){
   if(el) el.style.display = 'block';
 }
 window.showAdminTab = showAdminTab;
+
 
 
 
