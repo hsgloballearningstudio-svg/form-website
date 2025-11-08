@@ -122,7 +122,7 @@ async function renderProductsBuy() {
 
   try {
     // 👇 yahan apna Supabase Storage ka public JSON URL daalna hai
-    const response = await fetch("https://agqnakijoxjdcozoabox.supabase.co/storage/v1/object/public/public-data/products.json.txt");
+    const response = await fetch("https://agqnakijoxjdcozoabox.supabase.co/storage/v1/object/public/public-data/products.json");
     const products = await response.json();
 
     list.innerHTML = "";
@@ -421,6 +421,7 @@ function showAdminTab(tabId){
   if(el) el.style.display = 'block';
 }
 window.showAdminTab = showAdminTab;
+
 
 
 
