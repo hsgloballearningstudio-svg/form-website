@@ -8,22 +8,21 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
 <body>
+
   <header class="topbar">
     <h1>HS Global Learning Studio</h1>
-    
-    <!-- Top-right dropdown menu -->
-    <div class="top-right-menu">
-      <button id="profileBtn">☰</button>
-      <div id="dropdownMenu" class="dropdown-content">
-        <button onclick="showPage('home')">Service Form</button>
-        <button onclick="showPage('adminLogin')">Admin Panel</button>
+    <div class="top-right">
+      <button id="profileBtn"><i class="fas fa-ellipsis-v"></i></button>
+      <div id="dropdownMenu" style="display:none; position:absolute; top:50px; right:20px; background:white; border:1px solid #ddd; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); flex-direction:column; min-width:160px; z-index:1000;">
+        <button onclick="showPage('home')" style="border:none; background:none; padding:10px; text-align:left; width:100%;">Service Form</button>
+        <button onclick="showPage('adminLogin')" style="border:none; background:none; padding:10px; text-align:left; width:100%;">Admin Panel</button>
       </div>
     </div>
   </header>
 
   <main>
     <!-- HOME / Service Form -->
-    <section id="home" class="page active">
+    <section id="home" class="page">
       <h2>Request a Service</h2>
       <p>Select your service and we’ll get back to you soon.</p>
 
@@ -40,20 +39,22 @@
           <option>Graphics Design Learn</option>
           <option>Web Development Learn</option>
           <option>Computer Course Learn</option>
-          <option>Printing Service Available</option>
-          <option>Website Development / Design</option>
+          <option>Printing Service Available (Penaflex, V. Cards, Cash Books, Letter Pads, Stamps etc.)</option>
+          <option>Website Development / Design (Creating Websites / Composing etc.)</option>
           <option>Videos Editing Services</option>
           <option>Study Visa / Other Visa Services</option>
         </select>
+
         <label>Description</label>
         <textarea name="message" id="svc_message" placeholder="Write details..."></textarea>
+
         <button type="submit">Submit Request</button>
       </form>
       <div id="status" class="muted"></div>
     </section>
 
     <!-- PRODUCTS LIST -->
-    <section id="productsPage" class="page">
+    <section id="productsPage" class="page active">
       <h2>Products for Sale</h2>
       <div id="productListBuy" class="products"></div>
     </section>
@@ -116,7 +117,6 @@
             <input id="pImage" type="file" accept="image/*">
             <button type="submit">Add Product</button>
           </form>
-
           <div id="adminProductList" style="margin-top:16px;"></div>
 
           <!-- Edit form -->
