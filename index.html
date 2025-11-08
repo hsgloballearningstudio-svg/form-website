@@ -1,195 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>HS Global Learning Studio</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HS Global Learning Studio</title>
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
 <body>
-  <header class="topbar">
-    <h1>HS Global Learning Studio</h1>
-    <nav>
-      <button onclick="showPage('home')">Service</button>
-      <button onclick="showPage('productsPage')">Products</button>
-      <button onclick="showPage('adminLogin')">Admin</button>
-    </nav>
-  </header>
+<header class="topbar">
+  <h1>HS Global Learning Studio</h1>
+  <!-- Dots menu will be injected by JS -->
+</header>
 
-  <main>
-    <!-- HOME / Service Form -->
-    <section id="home" class="page active">
-      <h2>Request a Service</h2>
-      <p>Select your service and we’ll get back to you soon.</p>
+<main>
+  <!-- HOME / Service Form -->
+  <section id="home" class="page active">
+    <h2>Request a Service</h2>
+    <p>Select your service and we’ll get back to you soon.</p>
+    <form id="serviceForm" class="card">
+      <label>Name *</label>
+      <input name="name" id="svc_name" required>
+      <label>Email *</label>
+      <input name="email" id="svc_email" type="email" required>
+      <label>Contact / WhatsApp *</label>
+      <input name="contact" id="svc_contact" required>
+      <label>Service *</label>
+      <select name="service" id="svc_service" required>
+        <option value="">-- Choose service --</option>
+        <option>Graphics Design Learn</option>
+        <option>Web Development Learn</option>
+        <option>Computer Course Learn</option>
+        <option>Printing Service Available (Penaflex, V. Cards, Cash Books, Letter Pads, Stamps etc.)</option>
+        <option>Website Development / Design</option>
+        <option>Videos Editing Services</option>
+        <option>Study Visa / Other Visa Services</option>
+      </select>
+      <label>Description</label>
+      <textarea name="message" id="svc_message" placeholder="Write details..."></textarea>
+      <button type="submit">Submit Request</button>
+    </form>
+    <div id="status" class="muted"></div>
+  </section>
 
-      <form id="serviceForm" class="card">
-        <label>Name *</label>
-        <input name="name" id="svc_name" required>
-        <label>Email *</label>
-        <input name="email" id="svc_email" type="email" required>
-        <label>Contact / WhatsApp *</label>
-        <input name="contact" id="svc_contact" required>
-        <label>Service *</label>
-        <select name="service" id="svc_service" required>
-          <option value="">-- Choose service --</option>
-          <option>Graphics Design Learn</option>
-          <option>Web Development Learn</option>
-          <option>Computer Course Learn</option>
-          <option>Printing Service (Penaflex, V. Cards, Cash Books, Letter Pads, Stamps)</option>
-          <option>Website Development / Design</option>
-          <option>Video Editing Services</option>
-          <option>Study Visa / Other Visa Services</option>
-        </select>
+  <!-- PRODUCTS LIST -->
+  <section id="productsPage" class="page">
+    <h2>Products for Sale</h2>
+    <div id="productListBuy" class="products"></div>
+  </section>
 
-        <label>Description</label>
-        <textarea name="message" id="svc_message" placeholder="Write details..."></textarea>
+  <!-- PRODUCT ORDER FORM -->
+  <section id="productFormPage" class="page">
+    <h2>Buy Product</h2>
+    <form id="productOrderForm" class="card">
+      <label>Product Name</label>
+      <input name="productName" id="selectedProduct" readonly>
+      <label>Name *</label>
+      <input name="name" id="ord_name" required>
+      <label>Email *</label>
+      <input name="email" id="ord_email" type="email" required>
+      <label>Contact / WhatsApp *</label>
+      <input name="contact" id="ord_contact" required>
+      <label>Address *</label>
+      <textarea name="address" id="ord_address" required></textarea>
+      <button type="submit">Submit Order</button>
+    </form>
+    <div id="productOrderStatus" class="muted"></div>
+    <button onclick="showPage('productsPage')" style="margin-top:15px;">Back to Products</button>
+  </section>
 
-        <button type="submit">Submit Request</button>
-      </form>
-      <div id="status" class="muted"></div>
-    </section>
+  <!-- ADMIN LOGIN -->
+  <section id="adminLogin" class="page">
+    <div class="login-card card">
+      <h2>Admin Login</h2>
+      <input type="text" id="adminUser" placeholder="Username" class="loginInput">
+      <input type="password" id="adminPass" placeholder="Password" class="loginInput">
+      <button onclick="loginAdmin()" class="loginBtn">Login</button>
+      <p id="loginMsg" style="color:red; margin-top:10px;"></p>
+    </div>
+  </section>
 
-    <!-- PRODUCTS LIST -->
-    <section id="productsPage" class="page">
-      <h2>Products for Sale</h2>
-      <div id="productListBuy" class="products"></div>
-    </section>
+  <!-- ADMIN PANEL -->
+  <section id="adminPanel" class="page">
+    <h2>Admin Panel</h2>
+    <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px;">
+      <button onclick="logout()" class="logout">Logout</button>
+      <button onclick="showAdminTab('manageProducts')">Manage Products</button>
+      <button onclick="showAdminTab('serviceSubmissions')">Service Requests</button>
+      <button onclick="showAdminTab('productOrders')">Product Orders</button>
+    </div>
 
-    <!-- PRODUCT ORDER FORM -->
-    <section id="productFormPage" class="page">
-      <h2>Buy Product</h2>
-      <form id="productOrderForm" class="card">
-        <label>Product Name</label>
-        <input name="productName" id="selectedProduct" readonly>
-        <label>Name *</label>
-        <input name="name" id="ord_name" required>
-        <label>Email *</label>
-        <input name="email" id="ord_email" type="email" required>
-        <label>Contact / WhatsApp *</label>
-        <input name="contact" id="ord_contact" required>
-        <label>Address *</label>
-        <textarea name="address" id="ord_address" required></textarea>
-        <button type="submit">Submit Order</button>
-      </form>
-      <div id="productOrderStatus" class="muted"></div>
-      <button onclick="showPage('productsPage')" style="margin-top:15px;">Back to Products</button>
-    </section>
+    <div id="adminSections">
+      <!-- Manage Products -->
+      <div id="manageProducts" class="admin-section">
+        <h3>Products</h3>
+        <form id="addProductForm" class="card">
+          <label>Product Name</label>
+          <input id="pName" required>
+          <label>Price</label>
+          <input id="pPrice" type="number" required>
+          <label>Description</label>
+          <textarea id="pDesc"></textarea>
+          <label>Location</label>
+          <input id="pLocation">
+          <label>Image</label>
+          <input id="pImage" type="file" accept="image/*">
+          <button type="submit">Add Product</button>
+        </form>
 
-    <!-- ADMIN LOGIN -->
-    <section id="adminLogin" class="page" style="display:none;">
-      <div class="login-card card">
-        <h2>Admin Login</h2>
-        <input type="text" id="adminUser" placeholder="Username" class="loginInput">
-        <input type="password" id="adminPass" placeholder="Password" class="loginInput">
-        <button onclick="loginAdmin()" class="loginBtn">Login</button>
-        <p id="loginMsg" style="color:red; margin-top:10px;"></p>
-      </div>
-    </section>
+        <div id="adminProductList" style="margin-top:16px;"></div>
 
-    <!-- ADMIN PANEL -->
-    <section id="adminPanel" class="page" style="display:none;">
-      <h2>Admin Panel</h2>
-      <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px;">
-        <button onclick="logout()" class="logout">Logout</button>
-        <button onclick="showAdminTab('manageProducts')">Manage Products</button>
-        <button onclick="showAdminTab('serviceSubmissions')">Service Requests</button>
-        <button onclick="showAdminTab('productOrders')">Product Orders</button>
-      </div>
-
-      <div id="adminSections">
-        <!-- Manage Products -->
-        <div id="manageProducts" class="admin-section">
-          <h3>Products</h3>
-          <form id="addProductForm" class="card">
-            <label>Product Name</label>
-            <input id="pName" required>
-            <label>Price</label>
-            <input id="pPrice" type="number" required>
-            <label>Description</label>
-            <textarea id="pDesc"></textarea>
-            <label>Location</label>
-            <input id="pLocation">
-            <label>Image</label>
-            <input id="pImage" type="file" accept="image/*">
-            <button type="submit">Add Product</button>
-          </form>
-
-          <div id="adminProductList" style="margin-top:16px;"></div>
-
-          <!-- Edit Product -->
-          <div id="editProductCard" class="card" style="display:none; margin-top:16px;">
-            <h4>Edit Product</h4>
-            <input id="edit_id" type="hidden">
-            <label>Name</label><input id="edit_pName">
-            <label>Price</label><input id="edit_pPrice" type="number">
-            <label>Description</label><textarea id="edit_pDesc"></textarea>
-            <label>Location</label><input id="edit_pLocation">
-            <label>Change Image (optional)</label><input id="edit_pImage" type="file" accept="image/*">
-            <div style="margin-top:8px;">
-              <button onclick="saveEditedProduct()">Save Changes</button>
-              <button onclick="cancelEdit()" style="background: #999; margin-left:8px;">Cancel</button>
-            </div>
+        <!-- Edit form -->
+        <div id="editProductCard" class="card" style="display:none; margin-top:16px;">
+          <h4>Edit Product</h4>
+          <input id="edit_id" type="hidden">
+          <label>Name</label><input id="edit_pName">
+          <label>Price</label><input id="edit_pPrice" type="number">
+          <label>Description</label><textarea id="edit_pDesc"></textarea>
+          <label>Location</label><input id="edit_pLocation">
+          <label>Change Image (optional)</label><input id="edit_pImage" type="file" accept="image/*">
+          <div style="margin-top:8px;">
+            <button onclick="saveEditedProduct()">Save Changes</button>
+            <button onclick="cancelEdit()" style="background: #999; margin-left:8px;">Cancel</button>
           </div>
         </div>
-
-        <!-- Service Requests -->
-        <div id="serviceSubmissions" class="admin-section" style="display:none;">
-          <h3>Service Requests</h3>
-          <ul id="svcList"></ul>
-        </div>
-
-        <!-- Product Orders -->
-        <div id="productOrders" class="admin-section" style="display:none;">
-          <h3>Product Orders</h3>
-          <ul id="orderList"></ul>
-        </div>
       </div>
-    </section>
 
-  </main>
+      <!-- Service Submissions -->
+      <div id="serviceSubmissions" class="admin-section" style="display:none;">
+        <h3>Service Requests</h3>
+        <ul id="svcList"></ul>
+      </div>
 
-  <footer>
-    <div class="footer-sections">
-      <div>
-        <h4>Follow Us</h4>
-        <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
-        <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-        <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
-        <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
-        <p>Contact / WhatsApp: +92 308 6036049</p>
-      </div>
-      <div>
-        <h4>Services</h4>
-        <ul>
-          <li>Study Visa</li>
-          <li>Work Visa</li>
-          <li>Visit Visa</li>
-          <li>Travels & Tours</li>
-        </ul>
-      </div>
-      <div>
-        <h4>Courses & Learning</h4>
-        <ul>
-          <li>Computer Course</li>
-          <li>Web Development</li>
-          <li>Graphics Design</li>
-          <li>Video Editing</li>
-        </ul>
-      </div>
-      <div>
-        <h4>Other Services</h4>
-        <ul>
-          <li>Product Selling</li>
-          <li>Printing & Composing</li>
-          <li>Designing Services</li>
-          <li>Website Development / Design</li>
-        </ul>
+      <!-- Product Orders -->
+      <div id="productOrders" class="admin-section" style="display:none;">
+        <h3>Product Orders</h3>
+        <ul id="orderList"></ul>
       </div>
     </div>
-    <p>© HS Global Learning Studio. All Rights Reserved.</p>
-  </footer>
+  </section>
+</main>
 
-  <script type="module" src="script.js"></script>
+<footer>
+  <div class="footer-sections">
+    <div>
+      <h4>Follow Us</h4>
+      <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+      <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
+      <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+      <p>Contact / WhatsApp: +92 308 6036049</p>
+    </div>
+    <div>
+      <h4>Services</h4>
+      <ul>
+        <li>Study Visa</li>
+        <li>Work Visa</li>
+        <li>Visit Visa</li>
+        <li>Travels & Tours</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Courses & Learning</h4>
+      <ul>
+        <li>Computer Course</li>
+        <li>Web Development</li>
+        <li>Graphics Design</li>
+        <li>Video Editing</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Other Services</h4>
+      <ul>
+        <li>Product Selling</li>
+        <li>Printing & Composing</li>
+        <li>Designing Services</li>
+        <li>Website Development / Design</li>
+      </ul>
+    </div>
+  </div>
+  <p>© HS Global Learning Studio. All Rights Reserved.</p>
+</footer>
+
+<script type="module" src="script.js"></script>
 </body>
 </html>
