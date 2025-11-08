@@ -1,243 +1,307 @@
-// -------------------------------
+// =========================
 // SUPABASE SETUP
-// -------------------------------
-const supabaseUrl = "https://agqnakijoxjdcozoabox.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncW5ha2lqb3hqZGNvem9hYm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNDM1NzcsImV4cCI6MjA3NzkxOTU3N30.9N2xn3k5EtmKyCL04GUzmbX1rsSMd3pqJwSBX6IxM_4";
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+// =========================
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-// -------------------------------
-// HELPER FUNCTION
-// -------------------------------
-function escapeHtml(text){
-  if(!text) return "";
-  return text.replace(/[&<>"']/g, function(m){
-    return ({
-      '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;'
-    })[m];
-  });
+const SUPABASE_URL = "https://agqnakijoxjdcozoabox.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncW5ha2lqb3hqZGNvem9hYm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNDM1NzcsImV4cCI6MjA3NzkxOTU3N30.9N2xn3k5EtmKyCL04GUzmbX1rsSMd3pqJwSBX6IxM_4";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// =========================
+// PAGE HANDLING
+// =========================
+function hideAllPages(){
+  document.querySelectorAll(".page").forEach(p => p.style.display = "none");
 }
+function showPage(id){
+  hideAllPages();
+  const el = document.getElementById(id);
+  if(el) el.style.display = "block";
 
-// -------------------------------
-// UPDATE PRODUCTS JSON FILE
-// -------------------------------
-async function updateProductsJSON(){
-  try {
-    const { data: products, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if(error) throw error;
-
-    const jsonStr = JSON.stringify(products);
-    const { error: uploadError } = await supabase
-      .storage
-      .from('public-data') // your bucket name
-      .upload('products.json', new Blob([jsonStr], { type: 'application/json' }), { upsert: true });
-
-    if(uploadError) throw uploadError;
-    console.log("✅ Products JSON updated successfully!");
-  } catch(err){
-    console.error("❌ Error updating products JSON:", err);
+  if(id === "productsPage") renderProductsBuy();
+  if(id === "adminPanel"){
+    renderProductsAdmin();
+    renderServiceSubmissions();
+    renderOrders();
+    showAdminTab("manageProducts");
   }
 }
+window.showPage = showPage;
 
-// -------------------------------
-// RENDER PRODUCTS (ADMIN PANEL)
-// -------------------------------
-async function renderProductsAdmin(){
-  const list = document.getElementById("productListAdmin");
-  if(!list) return;
-  list.innerHTML = "<p>Loading...</p>";
+// =========================
+// HELPER FUNCTIONS
+// =========================
+function escapeHtml(s){return String(s||"").replace(/"/g,'\\"').replace(/'/g,"\\'");}
 
-  try {
-    const { data: products, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
+// =========================
+// SERVICE FORM -> SUPABASE
+// =========================
+document.getElementById("serviceForm").addEventListener("submit", async(e)=>{
+  e.preventDefault();
+  const name = svc_name.value.trim();
+  const email = svc_email.value.trim();
+  const contact = svc_contact.value.trim();
+  const service = svc_service.value;
+  const description = svc_message.value.trim();
+  const statusMsg = document.getElementById("status");
 
-    if(error) throw error;
-
-    list.innerHTML = products.map(p=>`
-      <div class="productCard">
-        <img src="${p.image_url || ''}" alt="${escapeHtml(p.name)}">
-        <h4>${escapeHtml(p.name)}</h4>
-        <p>${escapeHtml(p.description || '')}</p>
-        <strong>${p.price != null ? p.price : ''}</strong>
-        <div>
-          <button onclick="editProduct(${p.id})">Edit</button>
-          <button onclick="deleteProduct(${p.id})">Delete</button>
-        </div>
-      </div>
-    `).join("");
-  } catch(err){
-    list.innerHTML = "<p>Error loading products.</p>";
-    console.error(err);
+  if(!name || !email || !contact || !service){
+    statusMsg.textContent = "Please fill required fields.";
+    return;
   }
-}
-window.renderProductsAdmin = renderProductsAdmin;
 
-// -------------------------------
-// RENDER PRODUCTS (PUBLIC FRONT)
-// -------------------------------
+  statusMsg.textContent = "Submitting...";
+  const { error } = await supabase.from("service_forms").insert([{ name, email, contact, service, description }]);
+  if(error){
+    console.error(error);
+    statusMsg.textContent = "❌ Error saving request.";
+  } else {
+    statusMsg.textContent = "✅ Submitted successfully!";
+    e.target.reset();
+  }
+  setTimeout(()=>statusMsg.textContent="",3000);
+});
+
+// =========================
+// ORDER FORM -> SUPABASE
+// =========================
+document.getElementById("productOrderForm").addEventListener("submit", async(e)=>{
+  e.preventDefault();
+  const product_name = selectedProduct.value;
+  const name = ord_name.value.trim();
+  const email = ord_email.value.trim();
+  const contact = ord_contact.value.trim();
+  const address = ord_address.value.trim();
+  const status = document.getElementById("productOrderStatus");
+
+  if(!product_name || !name || !email || !contact || !address){
+    status.textContent = "Please fill required fields.";
+    return;
+  }
+
+  status.textContent = "Submitting order...";
+  const { error } = await supabase.from("product_orders").insert([{ product_name, name, email, contact, address }]);
+  if(error){
+    console.error(error);
+    status.textContent = "❌ Error submitting order.";
+  } else {
+    status.textContent = "✅ Order submitted!";
+    e.target.reset();
+    showPage("productsPage");
+  }
+  setTimeout(()=>status.textContent="",3000);
+});
+
+// =========================
+// PRODUCTS (FAST RENDER)
+// =========================
 async function renderProductsBuy(){
   const list = document.getElementById("productListBuy");
-  if(!list) return;
-  list.innerHTML = "<p>Loading products...</p>";
+  list.innerHTML = "<p class='muted'>Loading...</p>";
 
   try {
-    const response = await fetch("https://YOUR-PROJECT.supabase.co/storage/v1/object/public/public-data/products.json");
+    const { data: products, error } = await supabase.from("products").select("*").order("created_at",{ascending:false});
+    if(error) throw error;
 
-    const products = await response.json();
-
-    if(!products || !products.length){
+    if(!products.length){
       list.innerHTML = "<p>No products available.</p>";
       return;
     }
 
     list.innerHTML = products.map(p=>`
       <div class="product">
-        <img src="${p.image_url || ''}" alt="${escapeHtml(p.name)}">
+        <img src="${p.image_url||''}" alt="${escapeHtml(p.name)}">
         <h4>${escapeHtml(p.name)}</h4>
-        <p>${escapeHtml(p.description || '')}</p>
-        <strong>${p.price != null ? p.price : ''}</strong>
-        <div><button onclick="openOrderForm('${escapeHtml(p.name)}')">Buy Now</button></div>
+        <p>${escapeHtml(p.description||'')}</p>
+        <p class="muted">Location: ${escapeHtml(p.location||'—')}</p>
+        <strong>${p.price}</strong>
+        <button onclick="openOrderForm('${escapeHtml(p.name)}')">Buy Now</button>
       </div>
     `).join("");
   } catch(err){
-    console.error("Fast product loading error:", err);
-    list.innerHTML = "<p>Could not load products.</p>";
+    console.error(err);
+    list.innerHTML = "<p>Failed to load products.</p>";
   }
 }
 window.renderProductsBuy = renderProductsBuy;
 
-// -------------------------------
-// ADD NEW PRODUCT
-// -------------------------------
-async function saveNewProduct(p){
-  try {
-    const { data, error } = await supabase.from('products').insert([p]);
-    if(error) throw error;
+window.openOrderForm = (n)=>{
+  showPage("productFormPage");
+  document.getElementById("selectedProduct").value = n;
+};
 
+// =========================
+// ADMIN LOGIN
+// =========================
+window.loginAdmin = ()=>{
+  const u = adminUser.value.trim();
+  const p = adminPass.value.trim();
+  const msg = loginMsg;
+  if(u==="admin" && p==="1234"){
+    msg.style.color="green";
+    msg.textContent="Login successful!";
+    localStorage.setItem("isLoggedIn","true");
+    setTimeout(()=>showPage("adminPanel"),700);
+  } else {
+    msg.style.color="red";
+    msg.textContent="Invalid credentials!";
+  }
+};
+window.logout = ()=>{ localStorage.removeItem("isLoggedIn"); showPage("home"); };
+window.addEventListener("load",()=> localStorage.getItem("isLoggedIn")==="true"?showPage("adminPanel"):showPage("home"));
+
+// =========================
+// ADMIN: PRODUCT MANAGEMENT
+// =========================
+document.getElementById("addProductForm").addEventListener("submit",async(e)=>{
+  e.preventDefault();
+  const name = pName.value.trim();
+  const price = parseFloat(pPrice.value);
+  const description = pDesc.value.trim();
+  const location = pLocation.value.trim();
+  const file = pImage.files[0];
+  if(!name || isNaN(price)) return alert("Fill name and numeric price");
+
+  let image_url = "";
+  if(file){
+    const fileName = `product_${Date.now()}_${file.name}`;
+    const { error: uploadError } = await supabase.storage.from("public-data").upload(fileName, file);
+    if(uploadError) console.error(uploadError);
+    const { data } = supabase.storage.from("public-data").getPublicUrl(fileName);
+    image_url = data.publicUrl;
+  }
+
+  const { error } = await supabase.from("products").insert([{ name, price, description, location, image_url }]);
+  if(error){
+    console.error(error);
+    alert("Error adding product!");
+  } else {
     alert("✅ Product added!");
-    await updateProductsJSON();
     renderProductsAdmin();
     renderProductsBuy();
-  } catch(err){
-    console.error("Error adding product:", err);
-    alert("❌ Error adding product. See console.");
+    e.target.reset();
   }
+});
+
+async function renderProductsAdmin(){
+  const container = document.getElementById("adminProductList");
+  container.innerHTML = "<p>Loading...</p>";
+
+  const { data: products, error } = await supabase.from("products").select("*").order("created_at",{ascending:false});
+  if(error){ console.error(error); container.textContent="Error."; return; }
+
+  if(!products.length){ container.textContent="No products yet."; return; }
+
+  container.innerHTML = products.map(p=>`
+    <li style="display:flex;justify-content:space-between;align-items:center;margin:8px 0;border-bottom:1px solid #ccc;padding-bottom:6px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <img src="${p.image_url||''}" style="width:60px;height:40px;object-fit:cover;border-radius:4px;">
+        <div>
+          <strong>${escapeHtml(p.name)}</strong><br>
+          <small>${p.price} • ${escapeHtml(p.location||'—')}</small>
+        </div>
+      </div>
+      <div>
+        <button onclick="startEditProduct('${p.id}')">Edit</button>
+        <button onclick="deleteProduct('${p.id}')" style="background:#e74c3c;">Delete</button>
+      </div>
+    </li>
+  `).join("");
 }
+window.renderProductsAdmin = renderProductsAdmin;
 
-// -------------------------------
-// EDIT PRODUCT
-// -------------------------------
-async function saveEditedProduct(){
-  const id = document.getElementById("edit_id").value;
-  if(!id) return;
-  
-  const name = document.getElementById("edit_pName").value.trim();
-  const price = parseFloat(document.getElementById("edit_pPrice").value);
-  const desc = document.getElementById("edit_pDesc").value.trim();
-  const location = document.getElementById("edit_pLocation").value.trim();
-  const file = document.getElementById("edit_pImage").files[0];
+window.deleteProduct = async(id)=>{
+  if(!confirm("Delete product?")) return;
+  const { error } = await supabase.from("products").delete().eq("id",id);
+  if(error) alert("Error deleting!");
+  renderProductsAdmin();
+  renderProductsBuy();
+};
 
-  try {
-    const updates = { name, price, description: desc, location };
+window.startEditProduct = async(id)=>{
+  const { data:p, error } = await supabase.from("products").select("*").eq("id",id).single();
+  if(error) return alert("Error loading product");
+  edit_id.value=p.id;
+  edit_pName.value=p.name;
+  edit_pPrice.value=p.price;
+  edit_pDesc.value=p.description||'';
+  edit_pLocation.value=p.location||'';
+  document.getElementById("editProductCard").style.display="block";
+  window.scrollTo({top:0,behavior:"smooth"});
+};
 
-    if(file){
-      const reader = new FileReader();
-      reader.onload = async ()=>{
-        updates.image_url = reader.result;
-        const { error } = await supabase.from('products').update(updates).eq('id', id);
-        if(error) throw error;
-        await updateProductsJSON();
-        renderProductsAdmin();
-        renderProductsBuy();
-        document.getElementById("editProductCard").style.display = 'none';
-      };
-      reader.readAsDataURL(file);
-    } else {
-      const { error } = await supabase.from('products').update(updates).eq('id', id);
-      if(error) throw error;
-      await updateProductsJSON();
-      renderProductsAdmin();
-      renderProductsBuy();
-      document.getElementById("editProductCard").style.display = 'none';
-    }
-  } catch(err){
-    console.error("Save edited product error:", err);
-    alert("Error saving product. See console.");
+window.cancelEdit = ()=> document.getElementById("editProductCard").style.display="none";
+
+window.saveEditedProduct = async()=>{
+  const id = edit_id.value;
+  const name = edit_pName.value.trim();
+  const price = parseFloat(edit_pPrice.value);
+  const description = edit_pDesc.value.trim();
+  const location = edit_pLocation.value.trim();
+  const file = edit_pImage.files[0];
+  let updates = { name, price, description, location };
+
+  if(file){
+    const fileName = `product_${Date.now()}_${file.name}`;
+    const { error: uploadError } = await supabase.storage.from("public-data").upload(fileName, file);
+    if(uploadError) console.error(uploadError);
+    const { data } = supabase.storage.from("public-data").getPublicUrl(fileName);
+    updates.image_url = data.publicUrl;
   }
-}
 
-// -------------------------------
-// DELETE PRODUCT
-// -------------------------------
-async function deleteProduct(id){
-  if(!confirm("Delete this product?")) return;
-  try {
-    const { error } = await supabase.from('products').delete().eq('id', id);
-    if(error) throw error;
-    await updateProductsJSON();
+  const { error } = await supabase.from("products").update(updates).eq("id",id);
+  if(error){ console.error(error); alert("Error saving!"); }
+  else{
+    document.getElementById("editProductCard").style.display="none";
     renderProductsAdmin();
     renderProductsBuy();
-  } catch(err){
-    console.error("Delete product error:", err);
-    alert("Error deleting product.");
   }
-}
+};
 
-// -------------------------------
-// SERVICE REQUESTS (ADMIN PANEL)
-// -------------------------------
-async function renderServiceRequests(){
+// =========================
+// SERVICE REQUESTS & ORDERS
+// =========================
+async function renderServiceSubmissions(){
   const list = document.getElementById("svcList");
-  if(!list) return;
-  list.innerHTML = "<p>Loading...</p>";
+  const { data, error } = await supabase.from("service_forms").select("*").order("created_at",{ascending:false});
+  if(error){ console.error(error); list.textContent="Error."; return; }
+  if(!data.length){ list.textContent="No requests yet."; return; }
 
-  try {
-    const { data, error } = await supabase.from('service_forms').select('*').order('created_at', { ascending: false });
-    if(error) throw error;
-
-    list.innerHTML = data.map(r=>`
-      <div class="reqCard">
-        <h4>${escapeHtml(r.name)}</h4>
-        <p><b>Email:</b> ${escapeHtml(r.email)}</p>
-        <p><b>Service:</b> ${escapeHtml(r.service)}</p>
-        <p>${escapeHtml(r.message)}</p>
-      </div>
-    `).join("");
-  } catch(err){
-    list.innerHTML = "<p>Error loading requests.</p>";
-    console.error(err);
-  }
+  list.innerHTML = data.map(i=>`
+    <li style="border-bottom:1px solid #ccc;margin-bottom:8px;padding-bottom:6px;">
+      <strong>${escapeHtml(i.name)}</strong> • ${escapeHtml(i.service)}<br>
+      ${escapeHtml(i.email)} | ${escapeHtml(i.contact)}<br>
+      <em>${escapeHtml(i.description||'')}</em><br>
+      <small>${i.created_at}</small>
+    </li>
+  `).join("");
 }
-window.renderServiceRequests = renderServiceRequests;
+window.renderServiceSubmissions = renderServiceSubmissions;
 
-// -------------------------------
-// PRODUCT ORDERS (ADMIN PANEL)
-// -------------------------------
-async function renderProductOrders(){
+async function renderOrders(){
   const list = document.getElementById("orderList");
-  if(!list) return;
-  list.innerHTML = "<p>Loading...</p>";
+  const { data, error } = await supabase.from("product_orders").select("*").order("created_at",{ascending:false});
+  if(error){ console.error(error); list.textContent="Error."; return; }
+  if(!data.length){ list.textContent="No orders yet."; return; }
 
-  try {
-    const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
-    if(error) throw error;
-
-    list.innerHTML = data.map(o=>`
-      <div class="orderCard">
-        <h4>${escapeHtml(o.customer_name)}</h4>
-        <p><b>Product:</b> ${escapeHtml(o.product_name)}</p>
-        <p><b>Phone:</b> ${escapeHtml(o.phone)}</p>
-        <p><b>Address:</b> ${escapeHtml(o.address)}</p>
-      </div>
-    `).join("");
-  } catch(err){
-    list.innerHTML = "<p>Error loading orders.</p>";
-    console.error(err);
-  }
+  list.innerHTML = data.map(i=>`
+    <li style="border-bottom:1px solid #ccc;margin-bottom:8px;padding-bottom:6px;">
+      <strong>${escapeHtml(i.product_name)}</strong><br>
+      ${escapeHtml(i.name)} | ${escapeHtml(i.contact)}<br>
+      ${escapeHtml(i.email)}<br>
+      Address: ${escapeHtml(i.address||'—')}<br>
+      <small>${i.created_at}</small>
+    </li>
+  `).join("");
 }
-window.renderProductOrders = renderProductOrders;
+window.renderOrders = renderOrders;
+
+// =========================
+// ADMIN TAB SWITCH
+// =========================
+window.showAdminTab = (id)=>{
+  document.querySelectorAll(".admin-section").forEach(s=>s.style.display="none");
+  const el = document.getElementById(id);
+  if(el) el.style.display="block";
+};
