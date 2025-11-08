@@ -12,7 +12,6 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  position: relative;
 }
 
 .topbar {
@@ -22,29 +21,62 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
-nav button {
+
+.top-right-menu {
+  position: relative;
+}
+#profileBtn {
   background: var(--accent);
   color: white;
   border: none;
-  padding: 8px 14px;
-  margin-left: 8px;
-  border-radius: 6px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
+  font-size: 18px;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 45px;
+  background: var(--card);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  min-width: 160px;
+  z-index: 1000;
+  flex-direction: column;
+}
+.dropdown-content button {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 10px 15px;
+  cursor: pointer;
+  width: 100%;
   font-weight: 600;
 }
-nav button:hover { opacity: .9; }
+.dropdown-content button:hover {
+  background: var(--accent);
+  color: white;
+}
 
 main {
   max-width: 1000px;
   margin: 20px auto;
   padding: 0 16px;
   min-height: 70vh;
+  margin-bottom: 40px;
 }
-
 .page { display: none; }
 .page.active { display: block; animation: fade .4s ease; }
-@keyframes fade { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
+
+@keyframes fade {
+  from {opacity: 0; transform: translateY(10px);}
+  to {opacity: 1; transform: translateY(0);}
+}
 
 form, .card {
   background: var(--card);
@@ -53,7 +85,14 @@ form, .card {
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 label { font-weight: 600; display: block; margin-top: 10px; }
-input, select, textarea { width: 100%; margin-top: 5px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; }
+input, select, textarea {
+  width: 100%;
+  margin-top: 5px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+}
 button {
   background: var(--accent);
   border: none;
@@ -87,7 +126,6 @@ button:hover {opacity: .9;}
   border-radius: 8px;
   margin-bottom: 8px;
 }
-
 .footer-sections {
   display: flex;
   justify-content: space-around;
@@ -95,43 +133,55 @@ button:hover {opacity: .9;}
   text-align: left;
   margin-bottom: 15px;
 }
-.footer-sections div { margin: 10px; }
-.footer-sections h4 { margin-bottom: 8px; }
-.footer-sections a { margin-right: 6px; color: #fff; font-size: 20px; }
+.footer-sections div {
+  margin: 10px;
+}
+.footer-sections h4 {
+  margin-bottom: 8px;
+}
+.footer-sections a {
+  margin-right: 6px;
+  color: #fff;
+  font-size: 20px;
+}
 .footer-sections a:hover { color: var(--accent);}
-footer { text-align: center; padding: 25px; background: #222; color: #fff; margin-top: 30px; }
+footer {
+  text-align: center;
+  padding: 25px;
+  background: #222;
+  color: #fff;
+  margin-top: 30px;
+}
 
 /* Login */
-.login-card { max-width: 400px; margin: 40px auto; display:flex; flex-direction:column; gap:8px; }
-.loginInput { padding: 10px; margin: 5px 0; width: 250px; border: 1px solid #ccc; border-radius: 8px; }
-.loginBtn { padding: 10px 20px; background: #2d89ef; color: white; border: none; border-radius: 8px; cursor: pointer; }
+.login-card {
+  max-width: 400px;
+  margin: 40px auto;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.loginInput {
+  padding: 10px;
+  margin: 5px 0;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+.loginBtn {
+  padding: 10px 20px;
+  background: #2d89ef;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
 .loginBtn:hover { background: #1b5fc4; }
 
 /* Admin area */
 .admin-section { margin-top: 12px; }
 #adminProductList li { list-style: none; padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; gap:8px; }
 .muted { color: var(--muted); margin-top:8px; }
-
-/* Dot Menu */
-.dot-menu {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 999;
-}
-.dot-menu button {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: none;
-  background: #007bff;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.dot-menu button:hover { transform: scale(1.2); }
 
 /* responsive */
 @media (max-width:600px){
