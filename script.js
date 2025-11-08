@@ -184,40 +184,58 @@ document.getElementById("addProductForm").addEventListener("submit",async(e)=>{
   }
 });
 
-async function renderProductsAdmin(){
-  const container = document.getElementById("adminProductList");
-  container.innerHTML = "<p>Loading...</p>";
+async function renderProductsBuy() {
+  const list = document.getElementById("productListBuy");
+  list.innerHTML = "<p class='muted'>Loading products...</p>";
 
-  const { data: products, error } = await supabase.from("products").select("*").order("created_at",{ascending:false});
-  if(error){ console.error(error); container.textContent="Error."; return; }
+  // Step 1: show cached data instantly
+  const cached = localStorage.getItem("cachedProducts");
+  if (cached) {
+    const products = JSON.parse(cached);
+    list.innerHTML = products.map(p => productCard(p)).join("");
+  }
 
-  if(!products.length){ container.textContent="No products yet."; return; }
+  // Step 2: fetch latest data in background
+  try {
+    const { data: products, error } = await supabase
+      .from("products")
+      .select("id, name, description, price, location, image_url")
+      .order("created_at", { ascending: false });
 
-  container.innerHTML = products.map(p=>`
-    <li style="display:flex;justify-content:space-between;align-items:center;margin:8px 0;border-bottom:1px solid #ccc;padding-bottom:6px;">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <img src="${p.image_url||''}" style="width:60px;height:40px;object-fit:cover;border-radius:4px;">
-        <div>
-          <strong>${escapeHtml(p.name)}</strong><br>
-          <small>${p.price} • ${escapeHtml(p.location||'—')}</small>
-        </div>
-      </div>
-      <div>
-        <button onclick="startEditProduct('${p.id}')">Edit</button>
-        <button onclick="deleteProduct('${p.id}')" style="background:#e74c3c;">Delete</button>
-      </div>
-    </li>
-  `).join("");
+    if (error) throw error;
+
+    if (!products || !products.length) {
+      list.innerHTML = "<p class='muted'>No products available right now.</p>";
+      return;
+    }
+
+    // update cache + UI
+    localStorage.setItem("cachedProducts", JSON.stringify(products));
+    list.innerHTML = products.map(p => productCard(p)).join("");
+  } catch (err) {
+    console.error("Fetch products error:", err);
+    if (!cached) list.innerHTML = "<p class='muted'>Could not load products.</p>";
+  }
 }
-window.renderProductsAdmin = renderProductsAdmin;
 
-window.deleteProduct = async(id)=>{
-  if(!confirm("Delete product?")) return;
-  const { error } = await supabase.from("products").delete().eq("id",id);
-  if(error) alert("Error deleting!");
-  renderProductsAdmin();
-  renderProductsBuy();
-};
+function productCard(p) {
+  return `
+    <div class="product">
+      <img loading="lazy" src="${p.image_url || ''}" alt="${escapeHtml(p.name)}">
+      <h4>${escapeHtml(p.name)}</h4>
+      <p style="min-height:40px">${escapeHtml(p.description || '')}</p>
+      <p class="muted">Location: ${escapeHtml(p.location || '—')}</p>
+      <strong>${p.price != null ? p.price : ''}</strong>
+      <div style="margin-top:8px;">
+        <button onclick="openOrderForm('${escapeHtml(p.name)}')">Buy Now</button>
+      </div>
+    </div>
+  `;
+}
+
+// background auto-refresh every 60s
+setInterval(() => renderProductsBuy(), 60000);
+
 
 window.startEditProduct = async(id)=>{
   const { data:p, error } = await supabase.from("products").select("*").eq("id",id).single();
@@ -305,3 +323,4 @@ window.showAdminTab = (id)=>{
   const el = document.getElementById(id);
   if(el) el.style.display="block";
 };
+
