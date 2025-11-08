@@ -113,19 +113,21 @@ orderForm.addEventListener("submit", async (e) => {
   setTimeout(()=> status.textContent = "", 3500);
 });
 // --------------------------
-// PRODUCTS: fetch & render (public page)
-// --------------------------
-async function renderProductsBuy(){
+// --------------
+// FAST PRODUCT LOADING (from Supabase Storage JSON)
+// --------------
+async function renderProductsBuy() {
   const list = document.getElementById("productListBuy");
   list.innerHTML = "<p class='muted'>Loading products...</p>";
-  try {
-    const { data: products, error } = await supabase
-      .from("products")
-      .select("*")
-      .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    if(!products || !products.length){
+  try {
+    // 👇 yahan apna Supabase Storage ka public JSON URL daalna hai
+    const response = await fetch("https://agqnakijoxjdcozoabox.supabase.co/storage/v1/object/public/public-data/products.json.txt");
+    const products = await response.json();
+
+    list.innerHTML = "";
+
+    if (!products.length) {
       list.innerHTML = "<p class='muted'>No products available right now.</p>";
       return;
     }
@@ -143,11 +145,12 @@ async function renderProductsBuy(){
       </div>
     `).join("");
   } catch (err) {
-    console.error("Fetch products error:", err);
+    console.error("Fast product loading error:", err);
     list.innerHTML = "<p class='muted'>Could not load products. See console.</p>";
   }
 }
 window.renderProductsBuy = renderProductsBuy;
+
 
 // helper to prevent HTML breakage in onclick
 function escapeHtml(s){ return String(s||'').replace(/'/g,"\\'").replace(/"/g,'\\"'); }
@@ -418,6 +421,7 @@ function showAdminTab(tabId){
   if(el) el.style.display = 'block';
 }
 window.showAdminTab = showAdminTab;
+
 
 
 
