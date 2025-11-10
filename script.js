@@ -4,7 +4,7 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 // Supabase setup
 // ------------------------
 const SUPABASE_URL = "https://agqnakijoxjdcozoabox.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE"; // <-- replace with your anon key
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncW5ha2lqb3hqZGNvem9hYm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNDM1NzcsImV4cCI6MjA3NzkxOTU3N30.9N2xn3k5EtmKyCL04GUzmbX1rsSMd3pqJwSBX6IxM_4"; // <-- replace with your anon key
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ------------------------
@@ -429,3 +429,4 @@ window.addEventListener("load", ()=>{
   if(logged==='true') showPage("adminPanel");
   else showPage("home");
 });
+
