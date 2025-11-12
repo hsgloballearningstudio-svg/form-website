@@ -1,354 +1,180 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>HS Global — Modern</title>
-  <!-- Tailwind CDN for quick modern styling -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Icons -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <style>
-    /* small custom tweaks */
-    .card { @apply bg-white rounded-2xl shadow-md p-6; }
-    .muted { color: #6b7280 }
-  </style>
+    <meta charset="UTF-8">
+    <title>HS Global Learning Studio</title>
+    
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.6.4/dist/email.min.js"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800">
-  <header class="bg-white shadow sticky top-0 z-30">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-indigo-600 text-white rounded-lg flex items-center justify-center font-bold">HS</div>
-        <div>
-          <h1 class="text-lg font-semibold">HS Global Learning Studio</h1>
-          <p class="text-sm muted">Services • Courses • Products</p>
-        </div>
-      </div>
-      <nav class="flex items-center gap-3">
-        <button id="btnHome" class="px-3 py-2 rounded-md hover:bg-slate-100">Home</button>
-        <button id="btnProducts" class="px-3 py-2 rounded-md hover:bg-slate-100">Products</button>
-        <button id="btnAdmin" class="px-3 py-2 rounded-md bg-indigo-600 text-white rounded-lg">Admin</button>
-      </nav>
+<body>
+
+<header>
+    <h1>HS Global Learning Studio</h1>
+    <nav>
+        <button onclick="showPage('home')">Home</button>
+        <button onclick="showPage('productsPage')">Products</button>
+        <button onclick="showPage('serviceFormPage')">Service Form</button>
+        <button onclick="showPage('adminLoginPage')">Admin</button>
+    </nav>
+</header>
+
+<main>
+    <!-- HOME -->
+    <div id="home" class="page active">
+        <h2>Welcome to Our Business</h2>
+        <p>Explore our services and products.</p>
     </div>
-  </header>
 
-  <main class="max-w-5xl mx-auto p-4 space-y-6">
-    <!-- Home / Service form -->
-    <section id="page-home" class="card">
-      <div class="grid md:grid-cols-2 gap-6">
-        <div>
-          <h2 class="text-2xl font-bold">Request a Service</h2>
-          <p class="muted">Fill the form and we will contact you. You will also receive email & WhatsApp confirmation (if configured).</p>
+    <!-- PRODUCTS PAGE -->
+    <div id="productsPage" class="page">
+        <h2>Products</h2>
+        <div id="productListBuy"></div>
+    </div>
 
-          <form id="serviceForm" class="mt-4 space-y-3">
-            <div>
-              <label class="block text-sm font-medium">Name *</label>
-              <input id="svc_name" required class="w-full mt-1 p-3 border rounded-lg" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium">Email *</label>
-              <input id="svc_email" type="email" required class="w-full mt-1 p-3 border rounded-lg" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium">Contact / WhatsApp *</label>
-              <input id="svc_contact" required class="w-full mt-1 p-3 border rounded-lg" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium">Service *</label>
-              <select id="svc_service" class="w-full mt-1 p-3 border rounded-lg">
-                <option value="">Choose...</option>
-                <option>Graphics Design Learn</option>
-                <option>Web Development Learn</option>
-                <option>Computer Course Learn</option>
-                <option>Printing Service</option>
-                <option>Website Development / Design</option>
-                <option>Video Editing Services</option>
-                <option>Visa Services</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium">Description</label>
-              <textarea id="svc_message" class="w-full mt-1 p-3 border rounded-lg" rows="4"></textarea>
-            </div>
+    <!-- SERVICE FORM PAGE -->
+    <div id="serviceFormPage" class="page">
+        <h2>Request a Service</h2>
+        <form id="serviceForm">
+            <input id="svc_name" placeholder="Your Name" required><br><br>
+            <input id="svc_email" type="email" placeholder="Email" required><br><br>
+            <input id="svc_contact" placeholder="Contact / WhatsApp Number" required><br><br>
+            <select id="svc_service" required>
+                <option value="" disabled selected>Select a Service</option>
+                <option value="Computer Course">Computer Course</option>
+                <option value="Web Development Course">Web Development Course</option>
+                <option value="Website Build">Website Build</option>
+                <option value="Printing Services">Printing Services (V Cards, Letter Pads, Wedding Cards, Penaflex, etc.)</option>
+                <option value="Study / Other Visa Services">Study Visa / Other Visa Services</option>
+                <option value="Video Editing Services">Video Editing Services</option>
+            </select><br><br>
+            <textarea id="svc_message" placeholder="Description" required></textarea><br><br>
+            <button type="submit">Submit Service Request</button>
+        </form>
+        <p id="status"></p> <!-- Service form feedback -->
+    </div>
 
-            <div class="flex items-center gap-3">
-              <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg">Submit Request</button>
-              <div id="status" class="muted"></div>
-            </div>
-          </form>
+    <!-- PRODUCT ORDER FORM PAGE -->
+    <div id="productFormPage" class="page">
+        <h2>Order Product</h2>
+        <form id="productOrderForm">
+            <input type="hidden" id="selectedProduct">
+            <input id="ord_name" placeholder="Your Name" required><br><br>
+            <input id="ord_email" type="email" placeholder="Email" required><br><br>
+            <input id="ord_contact" placeholder="Contact Number" required><br><br>
+            <textarea id="ord_address" placeholder="Address" required></textarea><br><br>
+            <button type="submit">Submit Order</button>
+        </form>
+        <p id="productOrderStatus"></p> <!-- Product order feedback -->
+    </div>
+
+    <!-- ADMIN LOGIN PAGE -->
+    <div id="adminLoginPage" class="page">
+        <h2>Admin Login</h2>
+        <form onsubmit="loginAdmin(event)">
+            <input id="adminUser" placeholder="Username" required><br><br>
+            <input id="adminPass" type="password" placeholder="Password" required><br><br>
+            <button type="submit">Login</button>
+        </form>
+        <p id="loginMsg"></p>
+    </div>
+
+    <!-- ADMIN PANEL PAGE -->
+    <div id="adminPanel" class="page">
+        <h2>Admin Panel</h2>
+        <button onclick="logout()">Logout</button>
+        <nav>
+            <button onclick="showAdminTab('manageProducts')">Manage Products</button>
+            <button onclick="showAdminTab('viewServices')">Service Requests</button>
+            <button onclick="showAdminTab('viewOrders')">Product Orders</button>
+        </nav>
+
+        <!-- MANAGE PRODUCTS -->
+        <div id="manageProducts" class="admin-section">
+            <h3>Add Product</h3>
+            <form id="addProductForm">
+                <input id="pName" placeholder="Product Name" required><br><br>
+                <input id="pPrice" placeholder="Price" required><br><br>
+                <input id="pDesc" placeholder="Description" required><br><br>
+                <input id="pLocation" placeholder="Location"><br><br>
+                <input id="pImage" type="file" accept="image/*"><br><br>
+                <button type="submit">Add Product</button>
+            </form>
+            <h3>All Products</h3>
+            <div id="adminProductList"></div>
         </div>
 
-        <div>
-          <h3 class="text-lg font-semibold">Why choose HS Global?</h3>
-          <ul class="mt-3 space-y-2 text-sm muted">
-            <li>• Practical training & real projects</li>
-            <li>• Affordable pricing & bundles</li>
-            <li>• Quick response on orders & queries</li>
-          </ul>
-
-          <div class="mt-6">
-            <h4 class="font-medium">Quick Contact</h4>
-            <p class="mt-2 muted">WhatsApp: +92 308 6036049</p>
-            <p class="muted">Email: info@example.com</p>
-          </div>
+        <!-- SERVICE REQUESTS -->
+        <div id="viewServices" class="admin-section">
+            <h3>Service Requests</h3>
+            <ul id="svcList"></ul>
         </div>
-      </div>
-    </section>
 
-    <!-- Products page -->
-    <section id="page-products" class="card hidden">
-      <div class="flex items-center justify-between">
-        <h2 class="text-2xl font-bold">Products</h2>
-        <input id="searchProducts" placeholder="Search products..." class="p-2 border rounded-lg" />
-      </div>
-      <div id="productGrid" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-    </section>
-
-    <!-- Admin panel modal / page -->
-    <section id="page-admin" class="card hidden">
-      <div class="max-w-3xl mx-auto">
-        <h2 class="text-2xl font-bold">Admin</h2>
-        <div id="adminArea" class="mt-4 space-y-4">
-          <!-- login form -->
-          <div id="loginBox">
-            <p class="muted">Login using Supabase email/password or use local admin fallback.</p>
-            <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input id="adminEmail" placeholder="admin@example.com" class="p-3 border rounded-lg" />
-              <input id="adminPass" type="password" placeholder="password" class="p-3 border rounded-lg" />
-            </div>
-            <div class="mt-3 flex gap-2">
-              <button id="btnLogin" class="px-4 py-2 bg-indigo-600 text-white rounded">Login</button>
-              <button id="btnUseLocal" class="px-4 py-2 border rounded">Use local admin (dev)</button>
-            </div>
-            <p id="loginMsg" class="muted"></p>
-          </div>
-
-          <!-- admin tools -->
-          <div id="adminTools" class="hidden">
-            <div class="flex justify-between items-center">
-              <div class="space-x-2">
-                <button id="btnReloadData" class="px-3 py-1 border rounded">Reload</button>
-                <button id="btnLogout" class="px-3 py-1 border rounded">Logout</button>
-              </div>
-              <div class="text-sm muted">Signed in as <span id="signedUser"></span></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <h3 class="font-medium">Add Product</h3>
-                <form id="addProductForm" class="mt-2 space-y-2">
-                  <input id="pName" placeholder="Product name" class="w-full p-2 border rounded" />
-                  <input id="pPrice" placeholder="Price" class="w-full p-2 border rounded" />
-                  <input id="pLocation" placeholder="Location" class="w-full p-2 border rounded" />
-                  <textarea id="pDesc" placeholder="Description" class="w-full p-2 border rounded"></textarea>
-                  <input id="pImage" placeholder="Image URL (or upload later)" class="w-full p-2 border rounded" />
-                  <div class="flex gap-2">
-                    <button type="submit" class="px-3 py-1 bg-indigo-600 text-white rounded">Add</button>
-                    <button id="btnClearProducts" class="px-3 py-1 border rounded">Clear</button>
-                  </div>
-                </form>
-              </div>
-
-              <div>
-                <h3 class="font-medium">Manage Data</h3>
-                <div class="mt-2 space-y-2">
-                  <button id="showSvc" class="w-full text-left p-2 border rounded">Show Service Requests</button>
-                  <button id="showOrders" class="w-full text-left p-2 border rounded">Show Product Orders</button>
-                  <div id="adminList" class="mt-2 space-y-2"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
+        <!-- PRODUCT ORDERS -->
+        <div id="viewOrders" class="admin-section">
+            <h3>Product Orders</h3>
+            <ul id="orderList"></ul>
         </div>
-      </div>
-    </section>
+    </div>
+</main>
 
-  </main>
+<footer>
+  <div class="footer-row">
+    <!-- Social Icons -->
+    <div class="footer-column" id="footer-icons">
+      <a href="https://wa.me/923086036049" target="_blank"><i class="fab fa-whatsapp"></i></a>
+      <a href="https://www.facebook.com/hsgolballearningstudio" target="_blank"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://www.instagram.com/hsgolballearningstudio" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://www.tiktok.com/@hsgolballearningstudio" target="_blank"><i class="fab fa-tiktok"></i></a>
+      <a href="https://www.youtube.com/@hsgloballearningstudiobackupch" target="_blank"><i class="fab fa-youtube"></i></a>
+    </div>
 
-  <footer class="max-w-5xl mx-auto p-4 text-center muted">© HS Global Learning Studio</footer>
+    <!-- Printing Services -->
+    <div class="footer-column" id="footer-printing">
+      <h3>Printing Services</h3>
+      <ul>
+        <li><a href="https://wa.me/923086036049?text=I%20want%20more%20information%20about%20V%20Card%20Printing" target="_blank">V Card Printing</a></li>
+        <li><a href="https://wa.me/923086036049?text=I%20want%20more%20information%20about%20Letter%20Pads%20Printing" target="_blank">Letter Pads Printing</a></li>
+        <li><a href="https://wa.me/923086036049?text=I%20want%20more%20information%20about%20Cash%20Books%20Printing" target="_blank">Cash Books Printing</a></li>
+        <li><a href="https://wa.me/923086036049?text=I%20want%20more%20information%20about%20Penaflex%20Printing" target="_blank">Penaflex Printing</a></li>
+      </ul>
+    </div>
 
-  <!-- libs -->
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    <!-- Website & Digital Services -->
+    <div class="footer-column" id="footer-website">
+      <h3>Website & Digital Services</h3>
+      <ul>
+        <li><a href="https://wa.me/923086036049?text=I%20want%20more%20information%20about%20Website%20Creating" target="_blank">Website Creating</a></li>
+        <li><a href="https://wa.me/923086036049?text=I%20want%20more%20information%20about%20Social%20Media%20Marketing" target="_blank">Social Media Marketing</a></li>
+        <li><a href="https://wa.me/923086036049?text=I%20want%20more%20information%20about%20Online%20Apply" target="_blank">Online Apply</a></li>
+        <li><a href="https://wa.me/923086036049?text=I%20want%20more%20information%20about%20Job%20Details" target="_blank">Job Details</a></li>
+      </ul>
+    </div>
 
-    /* ---------- CONFIG - replace these with your project values ---------- */
-    const CONFIG = {
-      SUPABASE_URL: 'https://agqnakijoxjdcozoabox.supabase.co',
-      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncW5ha2lqb3hqZGNvem9hYm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNDM1NzcsImV4cCI6MjA3NzkxOTU3N30.9N2xn3k5EtmKyCL04GUzmbX1rsSMd3pqJwSBX6IxM_4',
+    <!-- Travels & Visa Services -->
+    <div class="footer-column" id="footer-travel">
+      <h3>Travels & Visa Services</h3>
+      <ul>
+        <li><a href="https://wa.me/923086036049?text=I%20want%20more%20information%20about%20Study%20Visa" target="_blank">Study Visa</a></li>
+        <li><a href="https://wa.me/923086036049?text=I%20want%20more%20information%20about%20Visit%20Visa" target="_blank">Visit Visa</a></li>
+        <li><a href="https://wa.me/923086036049?text=I%20want%20more%20information%20about%20Work%20Visa" target="_blank">Work Visa</a></li>
+        <li><a href="https://wa.me/923086036049?text=I%20want%20more%20information%20about%20Family%20Visa" target="_blank">Family Visa</a></li>
+        <li><a href="https://wa.me/923086036049?text=I%20want%20more%20information%20about%20Hajj%20&%20Umra" target="_blank">Hajj & Umra</a></li>
+      </ul>
+    </div>
+  </div>
 
-      // EmailJS (optional): if you choose EmailJS, create account, service and template and paste ids
-      EMAILJS_USER_ID: 'YOUR_EMAILJS_USER_ID',
-      EMAILJS_SERVICE_ID: 'YOUR_EMAILJS_SERVICE_ID',
-      EMAILJS_TEMPLATE_ID: 'YOUR_EMAILJS_TEMPLATE_ID',
+  <p class="copyright">© 2025 HS Global Learning Studio. All rights reserved.</p>
+</footer>
 
-      // WhatsApp via CallMeBot (optional): get your callmebot key and your whatsapp number (international format)
-      CALLMEBOT_KEY: 'YOUR_CALLMEBOT_KEY',
-      ADMIN_WHATSAPP_NUMBER: '+923086036049'
-    };
-
-    const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-
-    /* ---------- Simple UI navigation ---------- */
-    const el = id=>document.getElementById(id);
-    el('btnHome').addEventListener('click', ()=> show('page-home'));
-    el('btnProducts').addEventListener('click', ()=> { show('page-products'); loadProducts(); });
-    el('btnAdmin').addEventListener('click', ()=> show('page-admin'));
-
-    function show(id){
-      ['page-home','page-products','page-admin'].forEach(p=> document.getElementById(p).classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-    }
-
-    /* ---------- SERVICE FORM submit (saves to supabase, then notifies via email+whatsapp if configured) ---------- */
-    el('serviceForm').addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const name = el('svc_name').value.trim();
-      const email = el('svc_email').value.trim();
-      const contact = el('svc_contact').value.trim();
-      const service = el('svc_service').value;
-      const description = el('svc_message').value.trim();
-      const status = el('status');
-
-      if(!name||!email||!contact||!service){ status.textContent='Please fill required fields.'; return; }
-      status.textContent='Submitting...';
-
-      try{
-        const { error } = await supabase.from('service_forms').insert([{ name,email,contact,service,description }]);
-        if(error) throw error;
-
-        // optional: send Email via EmailJS
-        try{ if(CONFIG.EMAILJS_USER_ID && CONFIG.EMAILJS_SERVICE_ID && CONFIG.EMAILJS_TEMPLATE_ID){
-          // load emailjs dynamically and send
-          const { default: emailjs } = await import('https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js');
-          emailjs.init(CONFIG.EMAILJS_USER_ID);
-          const templateParams = { name, email, contact, service, description };
-          await emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, templateParams);
-        }}catch(e){ console.warn('EmailJS failed', e); }
-
-        // optional: send WhatsApp via CallMeBot (simple)
-        try{ if(CONFIG.CALLMEBOT_KEY){
-          // CallMeBot: https://www.callmebot.com/blog/free-api-whatsapp-messages/
-          const text = encodeURIComponent(`New service request from ${name} (${contact}) - ${service}`);
-          const callUrl = `https://api.callmebot.com/whatsapp.php?phone=${CONFIG.ADMIN_WHATSAPP_NUMBER}&text=${text}&apikey=${CONFIG.CALLMEBOT_KEY}`;
-          fetch(callUrl).catch(()=>{});
-        }}catch(e){ console.warn('CallMeBot warning', e); }
-
-        status.textContent='✅ Submitted. Thank you!';
-        el('serviceForm').reset();
-        setTimeout(()=> status.textContent='', 4000);
-      }catch(err){ console.error(err); status.textContent='❌ Error saving. See console.'; }
-    });
-
-    /* ---------- PRODUCTS: load from Supabase and render ---------- */
-    async function loadProducts(){
-      const grid = el('productGrid');
-      grid.innerHTML = '<div class="muted">Loading...</div>';
-      try{
-        const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
-        if(error) throw error;
-        if(!data || data.length===0){ grid.innerHTML='<div class="muted">No products available.</div>'; return; }
-        grid.innerHTML = data.map(p=>`
-          <div class="border rounded-xl p-4 bg-white">
-            <img src="${p.image_url||'https://via.placeholder.com/400x250'}" class="w-full h-48 object-cover rounded-md" />
-            <h3 class="mt-3 font-semibold">${p.name}</h3>
-            <p class="muted text-sm mt-1">${p.location||''}</p>
-            <div class="mt-2 flex items-center justify-between">
-              <div><strong>Rs ${p.price}</strong></div>
-              <button class="px-3 py-1 bg-indigo-600 text-white rounded" onclick="openOrderForm('${encodeURIComponent(p.name)}')">Order</button>
-            </div>
-          </div>
-        `).join('');
-      }catch(e){ console.error(e); grid.innerHTML='<div class="text-red-600">Error loading products. See console.</div>'; }
-    }
-
-    window.openOrderForm = function(nameEncoded){
-      const name = decodeURIComponent(nameEncoded);
-      // open a small modal or redirect to home with product prefilled - simple alert here
-      alert('Order flow: open product order form for: '+name);
-    }
-
-    /* ---------- ADMIN: simple auth + management UI ---------- */
-    el('btnUseLocal').addEventListener('click', ()=>{
-      // local fallback admin (for quick dev). Username: admin / pass: 1234
-      el('adminEmail').value='admin'; el('adminPass').value='1234';
-      loginLocal();
-    });
-
-    el('btnLogin').addEventListener('click', async ()=>{
-      const email = el('adminEmail').value.trim();
-      const pass = el('adminPass').value.trim();
-      // try Supabase sign-in first
-      try{
-        const { error, user } = await supabase.auth.signInWithPassword({ email, password: pass });
-        if(error) throw error;
-        showAdmin(user?.email||email);
-      }catch(e){
-        console.warn('Supabase login failed, trying local fallback');
-        loginLocal();
-      }
-    });
-
-    function loginLocal(){
-      const user = el('adminEmail').value.trim();
-      const pass = el('adminPass').value.trim();
-      if(user==='admin' && pass==='1234') showAdmin('local-admin');
-      else el('loginMsg').textContent='Invalid credentials';
-    }
-
-    function showAdmin(email){
-      el('loginBox').classList.add('hidden');
-      el('adminTools').classList.remove('hidden');
-      el('signedUser').textContent = email;
-      // wire admin buttons
-      el('btnReloadData').addEventListener('click', ()=>{ loadProducts(); loadServiceRequests(); loadOrders(); });
-      el('btnLogout').addEventListener('click', ()=>{ el('loginBox').classList.remove('hidden'); el('adminTools').classList.add('hidden'); });
-
-      // wire add product
-      el('addProductForm').addEventListener('submit', async (ev)=>{
-        ev.preventDefault();
-        const name = el('pName').value.trim();
-        const price = parseFloat(el('pPrice').value) || 0;
-        const location = el('pLocation').value.trim();
-        const description = el('pDesc').value.trim();
-        const image_url = el('pImage').value.trim();
-        try{
-          const { error } = await supabase.from('products').insert([{ name, price, location, description, image_url }]);
-          if(error) throw error;
-          alert('Product added');
-          el('addProductForm').reset();
-          loadProducts();
-        }catch(err){ console.error(err); alert('Error adding product'); }
-      });
-
-      // admin lists
-      el('showSvc').addEventListener('click', loadServiceRequests);
-      el('showOrders').addEventListener('click', loadOrders);
-    }
-
-    async function loadServiceRequests(){
-      const container = el('adminList'); container.innerHTML='Loading...';
-      try{
-        const { data, error } = await supabase.from('service_forms').select('*').order('created_at',{ascending:false});
-        if(error) throw error;
-        container.innerHTML = data.map(i=>`<div class="p-3 border rounded"><strong>${i.name}</strong> - ${i.service}<div class="muted text-sm">${i.email} • ${i.contact}</div></div>`).join('');
-      }catch(e){ console.error(e); container.innerHTML='Error loading'; }
-    }
-
-    async function loadOrders(){
-      const container = el('adminList'); container.innerHTML='Loading...';
-      try{
-        const { data, error } = await supabase.from('product_orders').select('*').order('created_at',{ascending:false});
-        if(error) throw error;
-        container.innerHTML = data.map(i=>`<div class="p-3 border rounded"><strong>${i.product_name}</strong> - ${i.name}<div class="muted text-sm">${i.email} • ${i.contact}</div></div>`).join('');
-      }catch(e){ console.error(e); container.innerHTML='Error loading'; }
-    }
-
-    // initial view
-    show('page-home');
-
-    /* ---------- Helpful debug helpers (open console) ---------- */
-    window._debug = { supabase, CONFIG };
-  </script>
+<script src="script.js"></script>
 </body>
 </html>
