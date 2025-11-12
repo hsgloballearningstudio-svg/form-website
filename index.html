@@ -4,29 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>HS Global — Modern</title>
-  <!-- Tailwind CDN for quick modern styling -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Icons -->
+  <!-- FontAwesome icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <style>
-    /* small custom tweaks */
-    .card { @apply bg-white rounded-2xl shadow-md p-6; }
-    .muted { color: #6b7280 }
-
-    /* Footer social icons */
-    .footer-icons a {
-      display: inline-block;
-      margin: 0 8px;
-      font-size: 1.5rem;
-      color: white;
-      transition: 0.2s;
-    }
-    .footer-icons a:hover {
-      color: #00e676;
-    }
-  </style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800">
+<body>
   <header class="bg-white shadow sticky top-0 z-30">
     <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -45,166 +29,32 @@
   </header>
 
   <main class="max-w-5xl mx-auto p-4 space-y-6">
-    <!-- Home / Service form -->
+    <!-- Pages: Home, Products, Admin -->
     <section id="page-home" class="card">
-      <div class="grid md:grid-cols-2 gap-6">
-        <div>
-          <h2 class="text-2xl font-bold">Request a Service</h2>
-          <p class="muted">Fill the form and we will contact you. You will also receive email & WhatsApp confirmation (if configured).</p>
-
-          <form id="serviceForm" class="mt-4 space-y-3">
-            <div>
-              <label class="block text-sm font-medium">Name *</label>
-              <input id="svc_name" required class="w-full mt-1 p-3 border rounded-lg" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium">Email *</label>
-              <input id="svc_email" type="email" required class="w-full mt-1 p-3 border rounded-lg" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium">Contact / WhatsApp *</label>
-              <input id="svc_contact" required class="w-full mt-1 p-3 border rounded-lg" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium">Service *</label>
-              <select id="svc_service" class="w-full mt-1 p-3 border rounded-lg">
-                <option value="">Choose...</option>
-                <option>Graphics Design Learn</option>
-                <option>Web Development Learn</option>
-                <option>Computer Course Learn</option>
-                <option>Printing Service</option>
-                <option>Website Development / Design</option>
-                <option>Video Editing Services</option>
-                <option>Visa Services</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium">Description</label>
-              <textarea id="svc_message" class="w-full mt-1 p-3 border rounded-lg" rows="4"></textarea>
-            </div>
-
-            <div class="flex items-center gap-3">
-              <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg">Submit Request</button>
-              <div id="status" class="muted"></div>
-            </div>
-          </form>
-        </div>
-
-        <div>
-          <h3 class="text-lg font-semibold">Why choose HS Global?</h3>
-          <ul class="mt-3 space-y-2 text-sm muted">
-            <li>• Practical training & real projects</li>
-            <li>• Affordable pricing & bundles</li>
-            <li>• Quick response on orders & queries</li>
-          </ul>
-
-          <div class="mt-6">
-            <h4 class="font-medium">Quick Contact</h4>
-            <p class="mt-2 muted">WhatsApp: +92 308 6036049</p>
-            <p class="muted">Email: info@example.com</p>
-          </div>
-        </div>
-      </div>
+      <!-- service form + description etc. -->
     </section>
 
-    <!-- Products page -->
     <section id="page-products" class="card hidden">
-      <div class="flex items-center justify-between">
-        <h2 class="text-2xl font-bold">Products</h2>
-        <input id="searchProducts" placeholder="Search products..." class="p-2 border rounded-lg" />
-      </div>
-      <div id="productGrid" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      <!-- Products page -->
     </section>
 
-    <!-- Admin panel modal / page -->
     <section id="page-admin" class="card hidden">
-      <div class="max-w-3xl mx-auto">
-        <h2 class="text-2xl font-bold">Admin</h2>
-        <div id="adminArea" class="mt-4 space-y-4">
-          <!-- login form -->
-          <div id="loginBox">
-            <p class="muted">Login using Supabase email/password or use local admin fallback.</p>
-            <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input id="adminEmail" placeholder="admin@example.com" class="p-3 border rounded-lg" />
-              <input id="adminPass" type="password" placeholder="password" class="p-3 border rounded-lg" />
-            </div>
-            <div class="mt-3 flex gap-2">
-              <button id="btnLogin" class="px-4 py-2 bg-indigo-600 text-white rounded">Login</button>
-              <button id="btnUseLocal" class="px-4 py-2 border rounded">Use local admin (dev)</button>
-            </div>
-            <p id="loginMsg" class="muted"></p>
-          </div>
-
-          <!-- admin tools -->
-          <div id="adminTools" class="hidden">
-            <div class="flex justify-between items-center">
-              <div class="space-x-2">
-                <button id="btnReloadData" class="px-3 py-1 border rounded">Reload</button>
-                <button id="btnLogout" class="px-3 py-1 border rounded">Logout</button>
-              </div>
-              <div class="text-sm muted">Signed in as <span id="signedUser"></span></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <h3 class="font-medium">Add Product</h3>
-                <form id="addProductForm" class="mt-2 space-y-2">
-                  <input id="pName" placeholder="Product name" class="w-full p-2 border rounded" />
-                  <input id="pPrice" placeholder="Price" class="w-full p-2 border rounded" />
-                  <input id="pLocation" placeholder="Location" class="w-full p-2 border rounded" />
-                  <textarea id="pDesc" placeholder="Description" class="w-full p-2 border rounded"></textarea>
-                  <input id="pImage" placeholder="Image URL (or upload later)" class="w-full p-2 border rounded" />
-                  <div class="flex gap-2">
-                    <button type="submit" class="px-3 py-1 bg-indigo-600 text-white rounded">Add</button>
-                    <button id="btnClearProducts" class="px-3 py-1 border rounded">Clear</button>
-                  </div>
-                </form>
-              </div>
-
-              <div>
-                <h3 class="font-medium">Manage Data</h3>
-                <div class="mt-2 space-y-2">
-                  <button id="showSvc" class="w-full text-left p-2 border rounded">Show Service Requests</button>
-                  <button id="showOrders" class="w-full text-left p-2 border rounded">Show Product Orders</button>
-                  <div id="adminList" class="mt-2 space-y-2"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
+      <!-- Admin panel -->
     </section>
-
   </main>
 
-  <!-- ================= FOOTER ================= -->
-  <footer class="max-w-5xl mx-auto p-6 text-center bg-slate-800 text-white rounded-t-xl">
-    <div class="footer-icons mb-3">
-      <a href="https://www.tiktok.com/@hsgloballearningstudio" target="_blank"><i class="fab fa-tiktok"></i></a>
-      <a href="https://www.instagram.com/hsgloballearningstudio" target="_blank"><i class="fab fa-instagram"></i></a>
-      <a href="https://www.facebook.com/hsgloballearningstudio" target="_blank"><i class="fab fa-facebook"></i></a>
-      <a href="https://www.youtube.com/@hsgloballearningstudiobackupch" target="_blank"><i class="fab fa-youtube"></i></a>
-      <a href="https://api.whatsapp.com/send?phone=+923086036049&text=Hello,%20I%20want%20to%20contact%20HS%20Global" target="_blank"><i class="fab fa-whatsapp"></i></a>
+  <!-- Footer with social icons -->
+  <footer class="max-w-5xl mx-auto p-4 text-center muted">
+    <div class="flex justify-center gap-6 mb-2">
+      <a href="https://www.tiktok.com/@hsgloballearningstudio" target="_blank"><i class="fab fa-tiktok fa-2x"></i></a>
+      <a href="https://www.instagram.com/hsgloballearningstudio" target="_blank"><i class="fab fa-instagram fa-2x"></i></a>
+      <a href="https://www.facebook.com/hsgloballearningstudio" target="_blank"><i class="fab fa-facebook fa-2x"></i></a>
+      <a href="https://wa.me/923086036049" target="_blank"><i class="fab fa-whatsapp fa-2x"></i></a>
+      <a href="https://www.youtube.com/@hsgloballearningstudiobackupch" target="_blank"><i class="fab fa-youtube fa-2x"></i></a>
     </div>
     © HS Global Learning Studio
   </footer>
 
-  <!-- Your JS code remains same (no changes, just your full supabase + admin + forms JS here) -->
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-    /* ---------- CONFIG ---------- */
-    const CONFIG = {
-      SUPABASE_URL: 'https://agqnakijoxjdcozoabox.supabase.co',
-      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncW5ha2lqb3hqZGNvem9hYm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNDM1NzcsImV4cCI6MjA3NzkxOTU3N30.9N2xn3k5EtmKyCL04GUzmbX1rsSMd3pqJwSBX6IxM_4'
-    };
-
-    const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-
-    // Your full JS logic from previous code goes here...
-    // Including: serviceForm, loadProducts, admin login, order form, render functions etc.
-  </script>
-
+  <script type="module" src="script.js"></script>
 </body>
 </html>
