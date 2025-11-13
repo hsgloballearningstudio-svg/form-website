@@ -4,21 +4,23 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>HS Global — Modern</title>
-
-  <!-- Tailwind CDN for quick modern styling -->
+  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-
   <!-- Icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-
   <style>
     /* small custom tweaks */
     .card { @apply bg-white rounded-2xl shadow-md p-6; }
     .muted { color: #6b7280 }
+
+    /* Footer sections (updated) */
+    footer a { text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
   </style>
 </head>
-
 <body class="bg-slate-50 min-h-screen text-slate-800">
+
+  <!-- Header -->
   <header class="bg-white shadow sticky top-0 z-30">
     <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -36,15 +38,14 @@
     </div>
   </header>
 
+  <!-- Main Content -->
   <main class="max-w-5xl mx-auto p-4 space-y-6">
-
-    <!-- Home / Service form -->
+    <!-- Home / Service Form -->
     <section id="page-home" class="card">
       <div class="grid md:grid-cols-2 gap-6">
         <div>
           <h2 class="text-2xl font-bold">Request a Service</h2>
           <p class="muted">Fill the form and we will contact you. You will also receive email & WhatsApp confirmation (if configured).</p>
-
           <form id="serviceForm" class="mt-4 space-y-3">
             <div>
               <label class="block text-sm font-medium">Name *</label>
@@ -81,7 +82,6 @@
             </div>
           </form>
         </div>
-
         <div>
           <h3 class="text-lg font-semibold">Why choose HS Global?</h3>
           <ul class="mt-3 space-y-2 text-sm muted">
@@ -89,7 +89,6 @@
             <li>• Affordable pricing & bundles</li>
             <li>• Quick response on orders & queries</li>
           </ul>
-
           <div class="mt-6">
             <h4 class="font-medium">Quick Contact</h4>
             <p class="mt-2 muted">WhatsApp: +92 308 6036049</p>
@@ -99,7 +98,7 @@
       </div>
     </section>
 
-    <!-- Products page -->
+    <!-- Products Page -->
     <section id="page-products" class="card hidden">
       <div class="flex items-center justify-between">
         <h2 class="text-2xl font-bold">Products</h2>
@@ -108,13 +107,11 @@
       <div id="productGrid" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </section>
 
-    <!-- Admin panel modal / page -->
+    <!-- Admin Page -->
     <section id="page-admin" class="card hidden">
       <div class="max-w-3xl mx-auto">
         <h2 class="text-2xl font-bold">Admin</h2>
         <div id="adminArea" class="mt-4 space-y-4">
-
-          <!-- login form -->
           <div id="loginBox">
             <p class="muted">Login using Supabase email/password or use local admin fallback.</p>
             <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -127,8 +124,6 @@
             </div>
             <p id="loginMsg" class="muted"></p>
           </div>
-
-          <!-- admin tools -->
           <div id="adminTools" class="hidden">
             <div class="flex justify-between items-center">
               <div class="space-x-2">
@@ -137,7 +132,6 @@
               </div>
               <div class="text-sm muted">Signed in as <span id="signedUser"></span></div>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <h3 class="font-medium">Add Product</h3>
@@ -153,7 +147,6 @@
                   </div>
                 </form>
               </div>
-
               <div>
                 <h3 class="font-medium">Manage Data</h3>
                 <div class="mt-2 space-y-2">
@@ -167,11 +160,89 @@
         </div>
       </div>
     </section>
-
   </main>
 
-  <footer class="max-w-5xl mx-auto p-4 text-center muted">
-    © HS Global Learning Studio
+  <!-- Footer with 4 Sections + WhatsApp Auto-Message -->
+  <footer class="bg-slate-800 text-white py-8 mt-8">
+    <div class="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      <div>
+        <h4 class="font-semibold mb-2">HS Global</h4>
+        <p class="text-sm muted">Modern learning studio for Graphic Design, Web Development, Computer Courses & more. Practical projects and fast support.</p>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-2">Quick Links</h4>
+        <ul class="text-sm muted space-y-1">
+          <li><a href="#" onclick="show('page-home')">Home</a></li>
+          <li><a href="#" onclick="show('page-products')">Products</a></li>
+          <li><a href="#" onclick="show('page-admin')">Admin</a></li>
+          <li><a href="#serviceForm">Request Service</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-2">Contact</h4>
+        <p class="text-sm muted">WhatsApp: <a href="https://wa.me/923086036049?text=Hello%20HS%20Global%20team!" target="_blank" class="underline">+92 308 6036049</a></p>
+        <p class="text-sm muted">Email: <a href="mailto:info@example.com" class="underline">info@example.com</a></p>
+        <p class="text-sm muted">Location: Pakistan</p>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-2">Quick WhatsApp</h4>
+        <div class="flex flex-col gap-2">
+          <button onclick="sendWhatsAppMsg('Hello, I want to know about your Graphics Design course.')" class="bg-green-500 px-3 py-2 rounded text-white text-sm">Graphics Design</button>
+          <button onclick="sendWhatsAppMsg('Hello, I want to know about Web Development courses.')" class="bg-green-500 px-3 py-2 rounded text-white text-sm">Web Development</button>
+          <button onclick="sendWhatsAppMsg('Hello, I am interested in your Printing Services.')" class="bg-green-500 px-3 py-2 rounded text-white text-sm">Printing Service</button>
+          <button onclick="sendWhatsAppMsg('Hello, I want to get information about Visa Services.')" class="bg-green-500 px-3 py-2 rounded text-white text-sm">Visa Services</button>
+        </div>
+      </div>
+    </div>
+    <p class="text-center text-sm muted mt-6">© HS Global Learning Studio</p>
   </footer>
+
+  <!-- JS -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    const CONFIG = {
+      SUPABASE_URL: 'https://agqnakijoxjdcozoabox.supabase.co',
+      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncW5ha2lqb3hqZGNvem9hYm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNDM1NzcsImV4cCI6MjA3NzkxOTU3N30.9N2xn3k5EtmKyCL04GUzmbX1rsSMd3pqJwSBX6IxM_4'
+    };
+    const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+
+    const el = id=>document.getElementById(id);
+    el('btnHome').addEventListener('click', ()=> show('page-home'));
+    el('btnProducts').addEventListener('click', ()=> { show('page-products'); });
+    el('btnAdmin').addEventListener('click', ()=> show('page-admin'));
+
+    function show(id){
+      ['page-home','page-products','page-admin'].forEach(p=> document.getElementById(p).classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    // Service Form
+    el('serviceForm').addEventListener('submit', async e=>{
+      e.preventDefault();
+      const name=el('svc_name').value.trim();
+      const email=el('svc_email').value.trim();
+      const contact=el('svc_contact').value.trim();
+      const service=el('svc_service').value;
+      const description=el('svc_message').value.trim();
+      const status=el('status');
+      if(!name||!email||!contact||!service){status.textContent='Please fill required fields.';return;}
+      status.textContent='Submitting...';
+      try{
+        const { error } = await supabase.from('service_forms').insert([{ name,email,contact,service,description }]);
+        if(error) throw error;
+        status.textContent='✅ Submitted. Thank you!';
+        el('serviceForm').reset();
+        setTimeout(()=>status.textContent='',4000);
+      }catch(err){console.error(err);status.textContent='❌ Error saving. See console.';}
+    });
+
+    // WhatsApp Auto Message Function
+    function sendWhatsAppMsg(msg){
+      const phone='923086036049';
+      const url=`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+      window.open(url,'_blank');
+    }
+    window.sendWhatsAppMsg = sendWhatsAppMsg;
+  </script>
 </body>
 </html>
