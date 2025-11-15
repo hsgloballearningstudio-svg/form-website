@@ -158,33 +158,81 @@ async function renderProductsBuy() {
     `).join("");
 }
 
-// =================== ADMIN LOGIN ===================
-function loginAdmin(e) {
-    e.preventDefault();
-    const user = document.getElementById("adminUser").value.trim();
+// =================== ADMIN LOGIN (FIXED) ===================
+
+// Supabase Email Login
+document.getElementById("btnLogin").addEventListener("click", async () => {
+    const email = document.getElementById("adminEmail").value.trim();
+    const password = document.getElementById("adminPass").value.trim();
+    const msg = document.getElementById("loginMsg");
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+        msg.style.color = "red";
+        msg.textContent = "Invalid Supabase login!";
+        return;
+    }
+
+    msg.style.color = "green";
+    msg.textContent = "Login successful!";
+    setTimeout(() => loadAdmin(), 500);
+});
+
+
+// Local fallback admin
+document.getElementById("btnUseLocal").addEventListener("click", () => {
+    const email = document.getElementById("adminEmail").value.trim();
     const pass = document.getElementById("adminPass").value.trim();
     const msg = document.getElementById("loginMsg");
-    if (user === "admin" && pass === "1234") {
-        localStorage.setItem("isLoggedIn", "true");
+
+    if (email === "admin" && pass === "1234") {
         msg.style.color = "green";
-        msg.textContent = "Login successful! Opening panel...";
-        setTimeout(() => { msg.textContent = ""; showPage("adminPanel"); }, 700);
+        msg.textContent = "Local admin login successful!";
+        setTimeout(() => loadAdmin(), 500);
     } else {
         msg.style.color = "red";
-        msg.textContent = "Invalid username or password!";
+        msg.textContent = "Invalid local admin login!";
     }
-}
-window.loginAdmin = loginAdmin;
+});
 
-function logout() {
-    localStorage.removeItem("isLoggedIn");
-    showPage("home");
+// Load Admin Panel
+function loadAdmin() {
+    document.getElementById("loginBox").classList.add("hidden");
+    document.getElementById("adminTools").classList.remove("hidden");
+    document.getElementById("signedUser").textContent =
+        document.getElementById("adminEmail").value.trim();
 }
-window.logout = logout;
 
-window.addEventListener("load", () => {
-    if (localStorage.getItem("isLoggedIn") === "true") showPage("adminPanel");
-    else showPage("home");
+// Logout
+document.getElementById("btnLogout").addEventListener("click", () => {
+    document.getElementById("adminTools").classList.add("hidden");
+    document.getElementById("loginBox").classList.remove("hidden");
+});
+
+// Reload data buttons
+document.getElementById("btnReloadData").addEventListener("click", () => {
+    renderProductsAdmin();
+    renderServiceSubmissions();
+    renderOrders();
+});
+
+// Service / Order toggles
+document.getElementById("showSvc").addEventListener("click", async () => {
+    const { data } = await supabase.from("service_forms").select("*");
+    document.getElementById("adminList").innerHTML =
+        "<h4 class='font-semibold'>Service Requests</h4>" +
+        data.map(i => `<p><b>${i.name}</b> — ${i.service}<br>${i.email} — ${i.contact}</p>`).join("");
+});
+
+document.getElementById("showOrders").addEventListener("click", async () => {
+    const { data } = await supabase.from("product_orders").select("*");
+    document.getElementById("adminList").innerHTML =
+        "<h4 class='font-semibold'>Product Orders</h4>" +
+        data.map(i => `<p><b>${i.product_name}</b><br>${i.name} — ${i.email}</p>`).join("");
 });
 
 // =================== ADMIN VIEW ===================
@@ -242,3 +290,4 @@ function sendWhatsAppNotification(messageText) {
     console.log("WhatsApp notification (mock):", messageText);
     // Replace with backend WhatsApp API in production
 }
+
