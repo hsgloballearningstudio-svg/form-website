@@ -160,26 +160,70 @@ async function renderProductsBuy() {
 
 // =================== ADMIN LOGIN (FIXED) ===================
 
-// Supabase Email Login
+// =================== ADMIN LOGIN (CORRECT & FINAL) ===================
+
+// ADMIN EMAIL (allowed admin)
+const ADMIN_EMAIL = "hsadvertiserofficial@gmail.com";
+
+// Supabase Login
 document.getElementById("btnLogin").addEventListener("click", async () => {
     const email = document.getElementById("adminEmail").value.trim();
     const password = document.getElementById("adminPass").value.trim();
     const msg = document.getElementById("loginMsg");
 
+    // TRY LOGIN
     const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
+        email,
+        password
     });
 
     if (error) {
         msg.style.color = "red";
-        msg.textContent = "Invalid Supabase login!";
+        msg.textContent = "Incorrect email or password!";
+        return;
+    }
+
+    // CHECK IF THIS IS THE ADMIN
+    if (email !== ADMIN_EMAIL) {
+        msg.style.color = "red";
+        msg.textContent = "Not authorized!";
         return;
     }
 
     msg.style.color = "green";
     msg.textContent = "Login successful!";
     setTimeout(() => loadAdmin(), 500);
+});
+
+// Local Backup Login
+document.getElementById("btnUseLocal").addEventListener("click", () => {
+    const email = document.getElementById("adminEmail").value.trim();
+    const pass = document.getElementById("adminPass").value.trim();
+    const msg = document.getElementById("loginMsg");
+
+    if (email === "admin" && pass === "1234") {
+        msg.style.color = "green";
+        msg.textContent = "Local admin login successful!";
+        setTimeout(() => loadAdmin(), 500);
+    } else {
+        msg.style.color = "red";
+        msg.textContent = "Invalid local admin login!";
+    }
+});
+
+// LOAD ADMIN PANEL
+function loadAdmin() {
+    document.getElementById("loginBox").classList.add("hidden");
+    document.getElementById("adminTools").classList.remove("hidden");
+    document.getElementById("signedUser").textContent =
+        document.getElementById("adminEmail").value.trim();
+}
+
+// LOGOUT
+document.getElementById("btnLogout").addEventListener("click", async () => {
+    await supabase.auth.signOut();
+    document.getElementById("adminTools").classList.add("hidden");
+    document.getElementById("loginBox").classList.remove("hidden");
 });
 
 
@@ -290,4 +334,5 @@ function sendWhatsAppNotification(messageText) {
     console.log("WhatsApp notification (mock):", messageText);
     // Replace with backend WhatsApp API in production
 }
+
 
